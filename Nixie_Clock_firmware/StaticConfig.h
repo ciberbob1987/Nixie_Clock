@@ -11,16 +11,15 @@ const char     DEFAULT_AP_SSID[]    = "NixieClock";
 const char     DEFAULT_AP_KEY[]     = "";   // Length must be 0 or >8
 const char     HIDDEN_WIFI_KEY[]    = "**********";
 
-const char     CURR_CONFIG_FILE[]   = "/generalConf.odata";
-const char     NEW_CONFIG_FILE[]    = "/newGeneralConf.odata";
-const char     LAST_NTP_SYNC_FILE[] = "/lastNTPSync.odata";
+const char     NVS_NAMESPACE[]         = "nixieclock";
+const char     NVS_KEY_CONFIG[]        = "conf.data";
+const char     NVS_KEY_LAST_NTP_SYNC[] = "ntpsync.data";
 
 const char     HOST_NAME[]          = "NixieClock";
 
 const char     STR_OK[]             = "OK";
 
-const uint32_t RTC_TAKE_DELAY       = 30;
-const uint32_t FS_TAKE_DELAY        = 30;
+const uint32_t SEM_TAKE_DELAY_MS    = 30;
 
 const uint8_t  WIFI_ON_TIME_MIN     = 10;
 
@@ -106,8 +105,8 @@ struct DSTInfo {
 };
 
 struct GlobalConfig {
-  char    netSSID[CONF_STR_LEN] = "YourWifiNetwork";
-  char    netKey[CONF_STR_LEN]  = "YourWifiPassword";
+  char    netSSID[CONF_STR_LEN] = "WifiNetworkName";
+  char    netKey[CONF_STR_LEN]  = "WifiNetworkPass";
   bool    netAPMode             = false;
   
   char    ntpAddr[CONF_STR_LEN] = "pool.ntp.org";

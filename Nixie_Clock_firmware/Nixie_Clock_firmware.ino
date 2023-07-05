@@ -1,27 +1,33 @@
 #include "StaticConfig.h"
 #include "NixieTubesDigitMap.h"
 
-#include <FFat.h>          // ESP32 core
-#include <WiFi.h>          // ESP32 core
+// WiFi network handling
+#include <WiFi.h>              // ESP32 core
 
-// NTP request
+// FFAT partition handling
+#include <FFat.h>              // ESP32 core
+
+// NVS partition handling
+#include <Preferences.h>       // ESP32 core
+
+// UTP needed for NTP request
 #include <WiFiUdp.h>           // ESP32 core
 
-// DAC communication
-#include <SPI.h>           // ESP32 core
+// SPI needed for DAC communication
+#include <SPI.h>               // ESP32 core
 
-// RTC DS3231 handling
-#include <RTClib.h>        // https://github.com/adafruit/RTClib
+// RTC DS3231 and DateTime handling
+#include <RTClib.h>            // https://github.com/adafruit/RTClib
 
-// Time and date handling with DST and timezone 
-#include <Timezone.h>      // https://github.com/JChristensen/Timezone
-                           // require TimeLib https://github.com/PaulStoffregen/Time
+// DST and timezone handling
+#include <Timezone.h>          // https://github.com/JChristensen/Timezone
+                               // require TimeLib https://github.com/PaulStoffregen/Time
 
 // Web server
 #include <ESPAsyncWebServer.h> // https://github.com/me-no-dev/ESPAsyncWebServer
                                // require AsyncTCP https://github.com/me-no-dev/AsyncTCP
 
-// JSON
+// JSON handling
 #include <ArduinoJson.h>       // https://github.com/bblanchon/ArduinoJson
 
 /*** MASTER CORE GLOBAL VARIABLES ***/
@@ -30,6 +36,7 @@ QueueHandle_t masterQueue, slaveQueue;
 
 RTC_DS3231        rtc;
 SemaphoreHandle_t rtcSemaphore;
+SemaphoreHandle_t nvsSemaphore;
 
 TimeChangeRule dstStart = {"DST", 0, 0, 0, 0, 0};
 TimeChangeRule dstEnd = {"STD", 0, 0, 0, 0, 0};
@@ -38,6 +45,8 @@ Timezone       timeZoneObj(dstEnd);
 TaskHandle_t   slaveCoreTaskHandler;
 
 AsyncWebServer webServer(80);
+
+Preferences prefsNVS;
 
 uint8_t  masterCore, slaveCore;
 bool     numOnTubes = false;
@@ -106,9 +115,26 @@ bool mainBootSequence() {
     return false;
   }
   
-  /* ------------------------------ */
-  /* --- Storage initialization --- */
-  /* ------------------------------ */
+  
+  /* ----------------------------------------------- */
+  /* --- NVS storage and settings initialization --- */
+  /* ----------------------------------------------- */
+  Serial.println("\n> NVS initialization");
+  prefsNVS.begin(NVS_NAMESPACE);
+  nvsSemaphore = xSemaphoreCreateMutex();
+  
+  Serial.println("\n> Reading config files");
+  if (!readBinaryData(&currConf, sizeof(GlobalConfig), NVS_KEY_CONFIG)) {
+    Serial.println("Using default config");
+    saveBinaryData(&currConf, sizeof(GlobalConfig), NVS_KEY_CONFIG);
+  }
+  
+  lastNTPSync = readIntData(NVS_KEY_LAST_NTP_SYNC);
+  
+  
+  /* ----------------------------------- */
+  /* --- FFAT storage initialization --- */
+  /* ----------------------------------- */
   for(uint8_t i=0; i<=1; i++) {
     Serial.println("\n> Mounting FAT volume");  
     if (FFat.begin()) break;
@@ -117,22 +143,6 @@ bool mainBootSequence() {
       FFat.format();
       // TODO: Print error code on tubes
     }
-  }
-  
-  
-  /* -------------------- */
-  /* --- Config files --- */
-  /* -------------------- */
-  Serial.println("\n> Reading config files");
-  if (!readBinaryData(&currConf, sizeof(GlobalConfig), CURR_CONFIG_FILE)) {
-    Serial.println("Using default config");
-    saveBinaryData(&currConf, sizeof(GlobalConfig), CURR_CONFIG_FILE);
-  }
-  
-  if (!readBinaryData(&lastNTPSync, sizeof(uint32_t), LAST_NTP_SYNC_FILE)) {
-    Serial.println("Unable to read last NTP sync");
-    lastNTPSync = 0;
-    saveBinaryData(&lastNTPSync, sizeof(uint32_t), LAST_NTP_SYNC_FILE);
   }
   
   
@@ -484,7 +494,14 @@ void execCmdHandler(AsyncWebServerRequest *request, uint8_t *data, size_t len, s
         DateTime newTimeLocal(year, month, day, hour, min, sec);
         DateTime newTimeUTC(timeZoneObj.toUTC(newTimeLocal.unixtime()));
         
-        rtc.adjust(newTimeUTC);
+        if (xSemaphoreTake(rtcSemaphore, SEM_TAKE_DELAY_MS)) {
+          rtc.adjust(newTimeUTC);
+          xSemaphoreGive(rtcSemaphore);
+        }
+        else {
+          sendPlainTextResponse(request, 500, "RTC busy");
+          return;
+        }
         
         currTime = newTimeUTC.unixtime();
         
@@ -512,7 +529,7 @@ void execCmdHandler(AsyncWebServerRequest *request, uint8_t *data, size_t len, s
   
   if (cmdCode != COMMAND_CODE::NTP_SYNC &&
       cmdCode != COMMAND_CODE::TIME_SYNC &&
-      !saveBinaryData(&newConf, sizeof(GlobalConfig), CURR_CONFIG_FILE)) {
+      !saveBinaryData(&newConf, sizeof(GlobalConfig), NVS_KEY_CONFIG)) {
     sendPlainTextResponse(request, 500, "Unable to save config file");
     return;
   }
@@ -807,7 +824,7 @@ bool syncNTP() {
   DateTime utcTime(utcTimeInt);
   DateTime rtcTime;
   
-  if (xSemaphoreTake(rtcSemaphore, RTC_TAKE_DELAY)) {
+  if (xSemaphoreTake(rtcSemaphore, SEM_TAKE_DELAY_MS)) {
     rtc.adjust(utcTime);
     rtcTime = rtc.now();
     xSemaphoreGive(rtcSemaphore);
@@ -819,7 +836,7 @@ bool syncNTP() {
   
   currTime = utcTimeInt;
   lastNTPSync = utcTimeInt;
-  saveBinaryData(&utcTimeInt, sizeof(uint32_t), LAST_NTP_SYNC_FILE);
+  saveIntData(lastNTPSync, NVS_KEY_LAST_NTP_SYNC);
   
   char dateTimeStringFormat[] = "DDD DD-MM-YYYY hh:mm:ss";
   char auxBuffer[25];
@@ -905,34 +922,24 @@ void setRGBLEDColor(uint32_t hexColor, uint8_t brightness, bool ledOn) {
   ledcWrite(PWM_CH_LED_B, (uint8_t)(blue*brightness/100));
 }
 
-bool readBinaryData(void* destPnt, const size_t size, const char* filename) {
-  Serial.print("Reading ");
-  Serial.print(filename);
-  Serial.print(" ...");
-  
-  if (!FFat.exists(filename)) {
-    Serial.println("File not found");
-    return false;
-  }
-    
-  File binFile = FFat.open(filename, FILE_READ);
-    
-  if (!binFile) {
-    Serial.println("Error opening file");
-    return false;
-  }
-  
-  if (binFile.size() != size) {
-    Serial.println("Wrong file size");
-    return false;
-  }
+bool readBinaryData(void* destPnt, const size_t size, const char* key) {
+  Serial.printf("Reading %s...", key);
   
   byte tmpBuffer[size];
-  size_t bytesRd = binFile.read((uint8_t*) &tmpBuffer, size);
-  binFile.close();
+  
+  size_t bytesRd = 0;
+  
+  if (xSemaphoreTake(nvsSemaphore, SEM_TAKE_DELAY_MS)) {
+    bytesRd = prefsNVS.getBytes(key, tmpBuffer, size);
+    xSemaphoreGive(nvsSemaphore);
+  }
+  else {
+    Serial.println("NVS busy");
+    return false;
+  }
   
   if (bytesRd != size) {
-    Serial.println("Error reading file");
+    Serial.println("Wrong size");
     return false;
   }
   
@@ -942,27 +949,62 @@ bool readBinaryData(void* destPnt, const size_t size, const char* filename) {
   return true;
 }
 
-bool saveBinaryData(const void* sourcePnt, const size_t size, const char* filename) {
-  Serial.print("Saving ");
-  Serial.print(filename);
-  Serial.print(" ...");
+bool saveBinaryData(const void* sourcePnt, const size_t size, const char* key) {
+  Serial.printf("Saving %s...", key);
   
-  if (FFat.exists(filename) && !FFat.remove(filename)) {
-    Serial.println("Error deleting old file");
+  size_t bytesWr = 0;
+
+  if (xSemaphoreTake(nvsSemaphore, SEM_TAKE_DELAY_MS)) {
+    bytesWr = prefsNVS.putBytes(key, (const void*) sourcePnt, size);
+    xSemaphoreGive(nvsSemaphore);
+  }
+  else {
+    Serial.println("NVS busy");
     return false;
   }
-    
-  File binFile = FFat.open(filename, FILE_WRITE);
-    
-  if (!binFile) {
-    Serial.println("Error opening file");
-    return false;
-  }
-    
-  size_t bytesWr = binFile.write((const uint8_t*) sourcePnt, size);
-  binFile.close();
-    
+  
   if (bytesWr != size) {
+    Serial.println("Error writing file");
+    return false;
+  }
+  
+  Serial.println(STR_OK);
+  return true;
+}
+
+uint32_t readIntData(const char* key) {
+  Serial.printf("Reading %s...", key);
+  
+  uint32_t destInt = 0;
+  
+  if (xSemaphoreTake(nvsSemaphore, SEM_TAKE_DELAY_MS)) {
+    destInt = prefsNVS.getUInt(key, 0);
+    xSemaphoreGive(nvsSemaphore);
+  }
+  else {
+    Serial.println("NVS busy");
+    return false;
+  }
+  
+  Serial.println(STR_OK);
+  return destInt;
+}
+
+bool saveIntData(const uint32_t sourceInt, const char* key) {
+  Serial.printf("Saving %s...", key);
+  
+  size_t bytesWr = 0;
+  
+  if (xSemaphoreTake(nvsSemaphore, SEM_TAKE_DELAY_MS)) {
+    bytesWr = prefsNVS.putUInt(key, sourceInt);
+    xSemaphoreGive(nvsSemaphore);
+  }
+  else {
+    Serial.println("NVS busy");
+    return false;
+  }
+  
+  if (bytesWr != sizeof(uint32_t)) {
     Serial.println("Error writing file");
     return false;
   }
@@ -1042,7 +1084,7 @@ void coreSlaveTask(void* parameter) {
       if (qItem == SLAVE_QUEUE_EVENT::UPDATE_TIME_ON_TUBES || qItem == SLAVE_QUEUE_EVENT::RTC_ALARM_FIRED) {
         //Serial.println("Update time on tubes");
         
-        if (xSemaphoreTake(rtcSemaphore, RTC_TAKE_DELAY)) {
+        if (xSemaphoreTake(rtcSemaphore, SEM_TAKE_DELAY_MS)) {
           if (rtc.alarmFired(1)) rtc.clearAlarm(1);
           currTime = rtc.now().unixtime();
           xSemaphoreGive(rtcSemaphore);
