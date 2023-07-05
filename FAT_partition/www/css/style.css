@@ -1,0 +1,44 @@
+body {
+    padding-top: 5rem;
+}
+
+.svg-image {
+    image-rendering: optimizeQuality;
+    shape-rendering: geometricPrecision;
+    text-rendering: geometricPrecision;
+}
+
+.svg-header-color {
+    fill: #343a40;
+}
+
+.svg-white-color {
+    fill: #FFF;
+}
+
+.card-columns {
+    -webkit-column-count: 2;
+    -moz-column-count: 2;
+    column-count: 2;
+}
+
+@media (max-width: 991px) {
+    .card-columns {
+        -webkit-column-count: 1;
+        -moz-column-count: 1;
+        column-count: 1;
+    }
+}
+
+.input-short {
+    width: 80px;
+}
+
+/* FIREFOX FIX OF UGLY SELECT BOXES */
+@supports (-moz-appearance:none) {
+    select {
+        -moz-appearance: none !important;
+        background: transparent url('data:image/gif;base64,R0lGODlhBgAGAKEDAFVVVX9/f9TU1CgmNyH5BAEKAAMALAAAAAAGAAYAAAIODA4hCDKWxlhNvmCnGwUAOw==') right center no-repeat !important;
+        background-position: calc(100% - 5px) center !important;
+    }
+}

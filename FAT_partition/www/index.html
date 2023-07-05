@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <meta name="description" content="Nixie Clock settings page">
+        <meta name="author" content="MNenni">
+        <link rel="icon" type="image/png" href="/img/favicon.png"/>
+        <title>Nixie Clock - Settings</title>
+        <!-- Bootstrap core CSS -->
+        <link href="css/bootstrap.css" rel="stylesheet">
+        <!-- Custom style -->
+        <link href="css/style.css" rel="stylesheet">
+        <!-- Bootstrap Colorpicker style -->
+        <link href="css/colorp.css" rel="stylesheet">
+    </head>
+    <body class="d-flex flex-column min-vh-100">
+        <nav class="bg-dark fixed-top navbar navbar-dark navbar-expand-md">
+            <div class="container">
+                <a class="align-items-center d-flex flex-row flex-sm-row navbar-brand" href="#"><svg xmlns="http://www.w3.org/2000/svg" width="121" height="50" viewBox="0 0 249 103" class="h-100 svg-image svg-white-color">
+                        <path d="M22 33l1 -2 0 -1 0 -2 0 -3 1 -2 0 -1 0 0 0 -1 0 -1 1 -1 0 -1 0 -1 1 0 0 0 0 -1 0 0 1 -1 0 0 1 -1 1 -1 0 0 0 0 1 -1 0 0 1 0 0 0 1 0 0 0 0 0 1 -1 1 0 1 0 1 0 1 0 2 0 2 0 2 0 1 0 3 0 138 0c4,0 7,3 7,7l0 67c0,4 -3,7 -7,7l-138 0 -3 0 -1 0 -2 0 -2 0 -2 0 -1 0 -1 0 -1 0 -1 -1 -1 0 0 0 0 0 -1 0 0 0 -1 -1 0 0 -1 0 0 0 0 -1 -1 0 -1 -1 0 0 -1 -1 0 0 0 -1 0 0 -1 -1 0 -1 0 -1 -1 0 0 -1 0 -1 0 -1 0 -1 -1 -2 0 -2 0 -3 0 -1 -1 -1 0 -1 0 -2 0 -1 -1 -1 0 -1 0 -1 -1 -1 0 -1 -1 -1 0 -2 -1 -1 0 -1 -1 -1 -1 0 0 -1 -1 -1 -1 -1 0 0 0 -1 0 0 0 -1 1 0 1 -1 0 -1 1 -1 1 -1 0 -1 1 -1 0 -1 1 -1 0 -1 1 -2 0 -1 0 -1 1 -1 0 -1 0 -1 0 -1zm223 -26l-26 0 0 -5c0,-1 -1,-2 -2,-2l-18 0c-1,0 -2,1 -2,2l0 3c-4,-3 -8,-5 -12,-5l-138 0 -3 0 -1 0 -2 0 -2 0 -2 0 -1 0 -2 0 -1 1 -1 0 -1 0 -1 0 -1 0 0 1 -1 0 -1 0 -1 1 -1 0 -1 1 -1 0 -1 1 -1 1 -1 1 0 0 -1 1 0 0 -1 1 0 1 -1 0 0 1 -1 2 0 1 -1 1 0 0 0 1 -1 1 0 0 0 1 0 1 0 1 0 1 -1 1 0 1 0 1 0 3 -1 2 0 1 0 1 0 1 0 1 0 1 -1 1 0 1 0 1 -1 1 0 1 -1 1 0 0 0 1 0 0 -1 0 0 1 -1 1 0 0 -1 1 0 0 -1 1 0 0 -1 1 -1 1 -1 0 -1 1 0 0 0 0 -1 1 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 1 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 0 1 0 0 1 0 0 1 0 1 1 1 1 1 1 0 0 1 0 0 1 1 0 0 1 1 0 0 1 1 1 0 0 0 1 0 0 1 1 0 1 1 1 0 1 0 0 1 2 0 1 0 1 0 1 0 1 0 1 1 2 0 2 0 2 0 1 1 1 0 1 0 1 0 1 0 0 0 1 1 1 0 0 0 1 1 1 0 1 1 1 0 1 1 1 0 1 1 0 0 1 1 1 0 0 1 1 1 0 1 1 1 1 1 0 1 1 1 0 1 1 1 0 0 0 1 0 1 1 1 0 1 0 1 0 2 0 1 0 2 1 2 0 2 0 1 0 3 0 138 0c4,0 8,-2 12,-5l0 3c0,1 1,2 2,2l18 0c1,0 2,-1 2,-2l0 -5 26 0c2,0 4,-2 4,-5 0,-2 -2,-4 -4,-4l-26 0 0 -7 26 0c2,0 4,-2 4,-5 0,-2 -2,-4 -4,-4l-26 0 0 -7 26 0c2,0 4,-2 4,-5 0,-2 -2,-4 -4,-4l-26 0 0 -7 26 0c2,0 4,-2 4,-4 0,-3 -2,-5 -4,-5l-26 0 0 -7 26 0c2,0 4,-2 4,-4 0,-3 -2,-5 -4,-5l-26 0 0 -7 26 0c2,0 4,-2 4,-4 0,-3 -2,-5 -4,-5z"/>
+                        <path d="M94 49c0,8 2,14 6,18l-31 -3 0 -31c0,-2 -3,-4 -6,-4 -3,0 -6,2 -6,4l0 34c0,3 3,5 7,5l38 5c1,0 3,0 4,0 5,0 8,-3 8,-7 0,-1 -1,-2 -2,-3 -2,-4 -6,-9 -6,-16 0,-11 8,-17 20,-17 15,0 20,8 20,21 0,6 -3,12 -6,17 -1,0 -1,1 -1,2 0,2 3,4 6,4 3,0 4,-1 5,-2 5,-5 9,-13 9,-23 0,-19 -14,-28 -33,-28 -19,0 -32,8 -32,24z"/>
+                    </svg><h1 class="d-none d-sm-inline m-0 ml-3 text-white">Nixie Clock</h1></a>
+                <h3 class="m-0 text-white">Settings</h3>
+            </div>
+        </nav>
+        <div class="container pt-3">
+            <div class="card-columns">
+                <div class="card">
+                    <div class="card-header m-0 row">
+                        <h5 class="align-self-center card-title col mb-0 p-0">Wifi</h5>
+                        <div class="col p-0 text-right">
+                            <a class="btn btn-danger btn-sm d-none" id="cancel-wifi" href="#">Cancel</a>
+                            <a class="btn btn-sm btn-success d-none" id="apply-wifi" href="#">Apply</a>
+                            <a class="btn btn-secondary btn-sm" id="edit-wifi" href="#">Edit</a> 
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <fieldset id="fs-wifi" disabled>
+                            <div class="form-group row">
+                                <label class="col-sm-5 col-form-label">Wifi mode</label>
+                                <div class="col-sm-7">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="net-mode" id="net-mode-ap" value="ap" checked>
+                                        <label class="form-check-label" for="net-mode-ap">Create new network</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="net-mode" id="net-mode-client" value="client">
+                                        <label class="form-check-label" for="net-mode-client">Connect to existing network</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="net-ap-row">
+                                <div class="form-group mb-0 row"> 
+                                    <label class="col-sm-5 col-form-label" for="net-ssid-ap">Network name (SSID)</label>
+                                    <div class="col-sm-7">
+                                        <input type="text" class="form-control" id="net-ssid-ap" readonly=""> 
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="net-client-row">
+                                <div class="form-group row"> 
+                                    <label class="col-sm-5 col-form-label" for="net-ssid">Network name (SSID)</label>
+                                    <div class="col-sm-7">
+                                        <input type="text" class="form-control" id="net-ssid"> 
+                                    </div>
+                                </div>
+                                <div class="form-group mb-0 row"> 
+                                    <label class="col-form-label col-sm-5" for="net-key">Access key</label>                                 
+                                    <div class="input-group col-sm-7">
+                                        <input type="password" class="form-control" id="net-key" value/>
+                                        <div class="input-group-append">
+                                            <button class="btn btn-outline-secondary" type="button" id="btn-pwd-show">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" class="bi bi-eye" viewBox="0 0 16 16" id="icon-pwd-show">
+                                                    <path fill-rule="evenodd" d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM1.173 8a13.134 13.134 0 0 0 1.66 2.043C4.12 11.332 5.88 12.5 8 12.5c2.12 0 3.879-1.168 5.168-2.457A13.134 13.134 0 0 0 14.828 8a13.133 13.133 0 0 0-1.66-2.043C11.879 4.668 10.119 3.5 8 3.5c-2.12 0-3.879 1.168-5.168 2.457A13.133 13.133 0 0 0 1.172 8z"></path>
+                                                    <path fill-rule="evenodd" d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0z"></path>
+                                                </svg>
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" class="bi bi-eye-slash d-none" viewBox="0 0 16 16" id="icon-pwd-hide">
+                                                    <path d="M13.359 11.238C15.06 9.72 16 8 16 8s-3-5.5-8-5.5a7.028 7.028 0 0 0-2.79.588l.77.771A5.944 5.944 0 0 1 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13.134 13.134 0 0 1 14.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755-.165.165-.337.328-.517.486l.708.709z"></path>
+                                                    <path d="M11.297 9.176a3.5 3.5 0 0 0-4.474-4.474l.823.823a2.5 2.5 0 0 1 2.829 2.829l.822.822zm-2.943 1.299l.822.822a3.5 3.5 0 0 1-4.474-4.474l.823.823a2.5 2.5 0 0 0 2.829 2.829z"></path>
+                                                    <path d="M3.35 5.47c-.18.16-.353.322-.518.487A13.134 13.134 0 0 0 1.172 8l.195.288c.335.48.83 1.12 1.465 1.755C4.121 11.332 5.881 12.5 8 12.5c.716 0 1.39-.133 2.02-.36l.77.772A7.029 7.029 0 0 1 8 13.5C3 13.5 0 8 0 8s.939-1.721 2.641-3.238l.708.709z"></path>
+                                                    <path fill-rule="evenodd" d="M13.646 14.354l-12-12 .708-.708 12 12-.708.708z"></path>
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    </div>                                 
+                                </div>
+                            </div>
+                        </fieldset>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header m-0 row">
+                        <h5 class="align-self-center card-title col mb-0 p-0">Time</h5>
+                        <div class="col p-0 text-right">
+                            <a class="btn btn-danger btn-sm d-none" id="cancel-time" href="#">Cancel</a>
+                            <a class="btn btn-sm btn-success d-none" id="apply-time" href="#">Apply</a>
+                            <a class="btn btn-secondary btn-sm" id="edit-time" href="#">Edit</a> 
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <fieldset id="fs-time-1" disabled>
+                            <div class="custom-control custom-switch mb-3">
+                                <input type="checkbox" class="custom-control-input" id="switch-time-format">
+                                <label class="custom-control-label" for="switch-time-format">12 hour format</label>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-sm-5 col-form-label">Set time</label>
+                                <div class="col-sm-7">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="time-sync" id="time-sync-ntp" value="ntp" checked>
+                                        <label class="form-check-label" for="time-sync-ntp">Sync from internet (NTP)</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="time-sync" id="time-sync-man" value="man">
+                                        <label class="form-check-label" for="time-sync-man">Sync manually</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </fieldset>
+                        <div id="sync-ntp">
+                            <fieldset id="fs-time-ntp" disabled>
+                                <div class="form-group row"> 
+                                    <label class="col-form-label col-sm-5" for="ntp-addr">NTP Server address</label>                                     
+                                    <div class="col-sm-7">
+                                        <input type="text" class="form-control" id="ntp-addr"> 
+                                    </div>
+                                </div>
+                                <div class="form-group row"> 
+                                    <label class="col-4 col-form-label col-sm-5" for="ntp-interval">Sync every</label>
+                                    <div class="col-8 col-sm-7">
+                                        <div class="no-gutters row">
+                                            <div class="col-5 col-sm-4 mr-2">
+                                                <input type="number" class="form-control" min="0" max="100" step="1" id="ntp-interval">
+                                            </div>
+                                            <label class="col-form-label">hours</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </fieldset>
+                            <div class="form-group mb-3 row" id="time-ntp-sync"> 
+                                <label class="col-form-label col-sm-5">Last sync on</label>
+                                <div class="col-sm-7 input-group">
+                                    <input type="text" class="form-control" readonly="" id="ntp-last-sync">
+                                    <div class="input-group-append">
+                                        <button class="btn btn-outline-secondary" type="button" id="ntp-sync-now">Sync&nbsp;now</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group mb-3 row" id="sync-man"> 
+                            <label class="col-form-label col-sm-5">Manual sync</label>
+                            <div class="col-sm-7 input-group">
+                                <input type="text" class="form-control" id="man-time">
+                                <div class="input-group-append">
+                                    <button class="btn btn-outline-secondary" type="button" id="man-sync-now">Sync&nbsp;now</button>
+                                </div>
+                            </div>
+                        </div>
+                        <fieldset id="fs-time-2" disabled>
+                            <div class="custom-control custom-switch mb-3">
+                                <input type="checkbox" class="custom-control-input" id="switch-auto-timezone">
+                                <label class="custom-control-label" for="switch-auto-timezone">Auto apply time zone</label>
+                            </div>
+                            <div class="form-group mb-0 row"> 
+                                <label class="col-form-label col-sm-3" for="sel-time-zone">Time zone</label>                                 
+                                <div class="col-sm-9">
+                                    <select class="form-control" id="sel-time-zone" name="sel-time-zone"></select>
+                                </div>
+                            </div>
+                        </fieldset>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header m-0 row">
+                        <h5 class="align-self-center card-title col mb-0 p-0">Daylight Saving Time</h5>
+                        <div class="col p-0 text-right">
+                            <a class="btn btn-danger btn-sm d-none" id="cancel-dst" href="#">Cancel</a>
+                            <a class="btn btn-sm btn-success d-none" id="apply-dst" href="#">Apply</a>
+                            <a class="btn btn-secondary btn-sm" id="edit-dst" href="#">Edit</a> 
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <fieldset id="fs-dst" disabled>
+                            <div class="custom-control custom-switch mb-3">
+                                <input type="checkbox" class="custom-control-input" id="switch-auto-dst">
+                                <label class="custom-control-label" for="switch-auto-dst">Apply Daylight Saving Time (DST)</label>
+                            </div>
+                            <div class="form-group row"> 
+                                <label class="col-4 col-form-label col-sm-3" for="dst-offset">DST offset</label>
+                                <div class="col-8 col-sm-9">
+                                    <div class="no-gutters row">
+                                        <div class="col-4 col-sm-3 mr-2">
+                                            <input type="number" class="form-control" min="0" max="90" step="1" id="dst-offset">
+                                        </div>
+                                        <label class="col-form-label">minutes</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group row"> 
+                                <label class="col-form-label col-sm-3">DST start</label>
+                                <div class="col-sm-9">
+                                    <div class="no-gutters row">
+                                        <div class="col mr-2">
+                                            <select class="form-control" id="sel-dst-start-w" name="sel-dst-start-w">
+                                                <option value="0">Last</option>
+                                                <option value="1">First</option>
+                                                <option value="2">Second</option>
+                                                <option value="3">Third</option>
+                                                <option value="4">Fourth</option>
+                                            </select>
+                                        </div>
+                                        <div class="col">
+                                            <select class="form-control" id="sel-dst-start-d" name="sel-dst-start-d">
+                                                <option value="2">Monday</option>
+                                                <option value="3">Tuesday</option>
+                                                <option value="4">Wednesday</option>
+                                                <option value="5">Thursday</option>
+                                                <option value="6">Friday</option>
+                                                <option value="7">Saturday</option>
+                                                <option value="1">Sunday</option>
+                                            </select>
+                                        </div>
+                                        <label class="col-1 col-form-label text-center">of</label>
+                                        <div class="col">
+                                            <select class="form-control" id="sel-dst-start-m" name="sel-dst-start-m">
+                                                <option value="1">January</option>
+                                                <option value="2">February</option>
+                                                <option value="3">March</option>
+                                                <option value="4">April</option>
+                                                <option value="5">May</option>
+                                                <option value="6">June</option>
+                                                <option value="7">July</option>
+                                                <option value="8">August</option>
+                                                <option value="9">September</option>
+                                                <option value="10">October</option>
+                                                <option value="11">November</option>
+                                                <option value="12">December</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group row"> 
+                                <label class="col-4 col-form-label col-sm-3">at (hh:00)</label>
+                                <div class="col-8 col-sm-9">
+                                    <div class="no-gutters row">
+                                        <div class="col-4 col-sm-3 mr-2">
+                                            <input type="number" class="form-control" min="0" max="90" step="1" id="dst-start-h">
+                                        </div>
+                                        <label class="col-form-label">:&nbsp;00</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group row"> 
+                                <label class="col-form-label col-sm-3">DST end</label>
+                                <div class="col-sm-9">
+                                    <div class="no-gutters row">
+                                        <div class="col mr-2">
+                                            <select class="form-control" id="sel-dst-end-w" name="sel-dst-end-w">
+                                                <option value="0">Last</option>
+                                                <option value="1">First</option>
+                                                <option value="2">Second</option>
+                                                <option value="3">Third</option>
+                                                <option value="4">Fourth</option>
+                                            </select>
+                                        </div>
+                                        <div class="col">
+                                            <select class="form-control" id="sel-dst-end-d" name="sel-dst-end-d">
+                                                <option value="2">Monday</option>
+                                                <option value="3">Tuesday</option>
+                                                <option value="4">Wednesday</option>
+                                                <option value="5">Thursday</option>
+                                                <option value="6">Friday</option>
+                                                <option value="7">Saturday</option>
+                                                <option value="1">Sunday</option>
+                                            </select>
+                                        </div>
+                                        <label class="col-1 col-form-label text-center">of</label>
+                                        <div class="col">
+                                            <select class="form-control" id="sel-dst-end-m" name="sel-dst-end-m">
+                                                <option value="1">January</option>
+                                                <option value="2">February</option>
+                                                <option value="3">March</option>
+                                                <option value="4">April</option>
+                                                <option value="5">May</option>
+                                                <option value="6">June</option>
+                                                <option value="7">July</option>
+                                                <option value="8">August</option>
+                                                <option value="9">September</option>
+                                                <option value="10">October</option>
+                                                <option value="11">November</option>
+                                                <option value="12">December</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group mb-0 row"> 
+                                <label class="col-4 col-form-label col-sm-3">at (hh:00)</label>
+                                <div class="col-8 col-sm-9">
+                                    <div class="no-gutters row">
+                                        <div class="col-4 col-sm-3 mr-2">
+                                            <input type="number" class="form-control" min="0" max="90" step="1" id="dst-end-h">
+                                        </div>
+                                        <label class="col-form-label">:&nbsp;00</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </fieldset>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">RGB LEDs</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="custom-control custom-switch mb-3">
+                            <input type="checkbox" class="custom-control-input" id="switch-rgb-on">
+                            <label class="custom-control-label" for="switch-rgb-on">LEDs ON</label>
+                        </div>
+                        <div class="form-group row"> 
+                            <label class="col-sm-3 col-form-label">Brightness</label>
+                            <div class="col-sm-9">
+                                <div class="form-row align-items-center">
+                                    <div class="col-4">
+                                        <input type="number" class="form-control" min="0" max="100" step="1" id="text-bri-rgb">
+                                    </div>
+                                    <div class="col-8">
+                                        <input type="range" class="custom-range" min="0" max="100" step="1" id="range-bri-rgb">
+                                    </div>
+                                </div>                                 
+                            </div>
+                        </div>
+                        <div class="form-group mb-0 row"> 
+                            <label class="col-sm-3 col-form-label">Color</label>
+                            <div id="rgb-picker" class="input-group col-sm-9 first-load">
+                                <input id="rgb-picker-input" type="text" class="form-control input-lg"/>
+                                <span class="input-group-append"> <span class="colorpicker-input-addon input-group-text"><i></i></span> </span>
+                            </div>                             
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Nixie tubes brightness</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="265" height="133" class="col-6 h-auto mb-3 mx-auto p-0 svg-header-color svg-image" viewBox="0 0 691678 348021">
+                                <path d="M97293 31195l2372 361 1589 222 3189 415 3567 468 2705 398 1342 225 1109 214 1104 238 1173 296 1154 352 1211 444 1178 517 579 287 562 312 735 448 710 484 681 521 854 743 796 809 739 862 488 652 452 674 406 702 267 525 247 542 233 578 210 587 197 616 172 624 292 1260 229 1273 144 960 119 965 185 1929 156 2418 99 2401 65 3173 16 2121 9 4294 0 191687c0 5689-4655 10343-10344 10343l-93029 0c-5689 0-10344-4654-10344-10343l0-191687 9-4294 16-2121 65-3173 99-2401 156-2418 185-1929 119-965 144-960 229-1273 291-1260 173-624 197-616 210-587 234-578 246-542 267-526 406-701 451-674 489-652 739-862 796-809 854-743 681-521 710-484 735-448 562-312 579-287 1178-517 1211-444 1153-353 1174-295 1104-238 1109-214 1342-226 2704-397 3567-468 3190-415 1588-221 2373-362 1551-267 1552-295 1437-304 1428-336 1473-390 1458-435 1736-596 1712-673 1678-747 1638-825 1601-899 1297-804 1268-858 1236-903 1194-952 1035-887 1001-915 973-953 255-262 256 262 973 953 1001 915 1034 887 1195 952 1236 903 1268 858 1297 804 1601 899 1638 825 1678 747 1712 673 1736 596 1457 435 1474 389 1428 337 1437 304 1552 295 1551 267zm36053 310472l0-36325 6925 0c1625 0 2955-1330 2955-2955l0-25041c0-1625-1330-2955-2955-2955l-3174 0c3920-4434 6307-10252 6307-16599l0-191687-5-4183-16-2072-57-3075-74-2261-115-2221-156-2163-209-2102-271-2027-337-1950-193-944-213-928-320-1211-358-1182-398-1153-554-1404-628-1371-706-1338-784-1306-866-1284-956-1260-1027-1219-1124-1191-595-582-620-579-870-751-916-731-960-706-1309-878-1388-829-1478-781-1563-726-1654-669-867-312-886-291-907-275-928-259-998-250-1026-234-1317-267-1350-250-1413-234-1436-218-1933-267-3900-509-2582-336-1272-181-1876-283-1371-234-1342-255-1511-324-1445-361-1375-410-1325-464-1248-509-1170-555-1100-586-669-395-640-402-657-443-624-451-1124-891-723-628-669-628-641-641-591-628-804-915-488-587-863-1092-1424-1892-1022-1367-574-701-267-284-349-312-357-250-238-131-255-116-324-114-337-91-423-82-434-53-604-45-406-17-830-8-829 8-406 17-604 45-435 53-423 82-336 91-324 114-255 116-238 131-357 250-349 312-267 284-574 701-1022 1367-1425 1892-862 1092-488 587-805 915-591 628-640 641-669 628-723 628-1124 891-624 451-657 443-640 402-669 395-1100 586-1170 555-1248 509-1325 464-1376 410-1444 361-1511 324-1342 255-1371 234-1876 283-1272 181-2582 336-3900 509-1933 267-1436 218-1413 234-1350 250-1317 267-1027 234-997 250-928 259-907 275-886 291-867 312-1654 669-1564 726-1477 781-1388 829-1309 878-961 706-915 731-870 751-620 579-595 582-1124 1191-1027 1219-956 1260-866 1284-784 1306-706 1338-628 1371-554 1404-398 1153-358 1182-320 1211-213 928-193 944-337 1950-271 2027-209 2102-156 2163-115 2221-74 2261-57 3075-17 2072-4 4183 0 191687c0 6347 2387 12165 6306 16599l-3486 0c-1625 0-2955 1330-2955 2955l0 25041c0 1625 1330 2955 2955 2955l6924 0 0 36325c0 3495 2859 6354 6354 6354 3495 0 6354-2859 6354-6354l0-36325 9444 0 0 36325c0 3495 2859 6354 6354 6354 3495 0 6354-2859 6354-6354l0-36325 9444 0 0 36325c0 3495 2859 6354 6354 6354 3494 0 6354-2859 6354-6354l0-36325 9444 0 0 36325c0 3495 2859 6354 6354 6354 3495 0 6354-2859 6354-6354l0-36325 9444 0 0 36325c0 3495 2859 6354 6354 6354 3494 0 6354-2859 6354-6354l0-36325 9444 0 0 36325c0 3495 2859 6354 6354 6354 3494 0 6353-2859 6353-6354z"/>
+                                <path d="M253943 31195l2372 361 1589 222 3189 415 3567 468 2705 398 1342 225 1109 214 1104 238 1173 296 1154 352 1211 444 1178 517 579 287 562 312 735 448 710 484 681 521 854 743 796 809 739 862 488 652 452 674 406 702 267 525 247 542 233 578 210 587 197 616 172 624 292 1260 229 1273 144 960 119 965 185 1929 156 2418 99 2401 65 3173 16 2121 9 4294 0 191687c0 5689-4655 10343-10344 10343l-93029 0c-5689 0-10344-4654-10344-10343l0-191687 9-4294 16-2121 65-3173 99-2401 156-2418 185-1929 118-965 145-960 229-1273 291-1260 173-624 197-616 210-587 233-578 247-542 266-526 407-701 451-674 489-652 739-862 796-809 854-743 681-521 710-484 735-448 562-312 579-287 1178-517 1211-444 1153-353 1174-295 1104-238 1109-214 1342-226 2704-397 3567-468 3190-415 1588-221 2373-362 1551-267 1552-295 1437-304 1428-336 1473-390 1458-435 1736-596 1712-673 1678-747 1638-825 1601-899 1297-804 1268-858 1236-903 1194-952 1035-887 1001-915 973-953 255-262 256 262 973 953 1001 915 1034 887 1195 952 1236 903 1268 858 1297 804 1601 899 1637 825 1679 747 1712 673 1736 596 1457 435 1474 389 1428 337 1437 304 1552 295 1551 267zm36053 310472l0-36325 6925 0c1625 0 2955-1330 2955-2955l0-25041c0-1625-1330-2955-2955-2955l-3174 0c3920-4434 6307-10252 6307-16599l0-191687-5-4183-16-2072-57-3075-74-2261-115-2221-156-2163-209-2102-272-2027-336-1950-193-944-214-928-319-1211-358-1182-398-1153-554-1404-628-1371-706-1338-784-1306-866-1284-956-1260-1027-1219-1124-1191-595-582-620-579-870-751-916-731-960-706-1310-878-1387-829-1478-781-1564-726-1654-669-866-312-886-291-907-275-928-259-998-250-1026-234-1317-267-1350-250-1413-234-1436-218-1933-267-3900-509-2582-336-1272-181-1876-283-1371-234-1342-255-1511-324-1445-361-1375-410-1325-464-1248-509-1170-555-1100-586-669-395-640-402-657-443-624-451-1125-891-722-628-669-628-641-641-591-628-804-915-489-587-862-1092-1424-1892-1022-1367-574-701-267-284-349-312-357-250-239-131-254-116-324-114-337-91-423-82-435-53-603-45-406-17-830-8-829 8-406 17-604 45-435 53-423 82-336 91-324 114-255 116-238 131-357 250-349 312-267 284-574 701-1022 1367-1425 1892-862 1092-488 587-805 915-591 628-640 641-669 628-723 628-1124 891-624 451-657 443-640 402-669 395-1100 586-1170 555-1248 509-1325 464-1376 410-1444 361-1511 324-1342 255-1371 234-1876 283-1272 181-2582 336-3900 509-1933 267-1436 218-1413 234-1350 250-1317 267-1027 234-997 250-928 259-907 275-886 291-867 312-1654 669-1564 726-1477 781-1388 829-1309 878-961 706-915 731-870 751-620 579-595 582-1124 1191-1027 1219-956 1260-866 1284-784 1306-706 1338-628 1371-554 1404-398 1153-358 1182-320 1211-213 928-193 944-337 1950-271 2027-209 2102-156 2163-115 2221-74 2261-57 3075-17 2072-4 4183 0 191687c0 6347 2386 12165 6306 16599l-3486 0c-1625 0-2955 1330-2955 2955l0 25041c0 1625 1330 2955 2955 2955l6924 0 0 36325c0 3495 2859 6354 6354 6354 3495 0 6354-2859 6354-6354l0-36325 9444 0 0 36325c0 3495 2859 6354 6354 6354 3495 0 6354-2859 6354-6354l0-36325 9444 0 0 36325c0 3495 2859 6354 6354 6354 3494 0 6354-2859 6354-6354l0-36325 9444 0 0 36325c0 3495 2859 6354 6354 6354 3495 0 6354-2859 6354-6354l0-36325 9444 0 0 36325c0 3495 2859 6354 6354 6354 3494 0 6354-2859 6354-6354l0-36325 9444 0 0 36325c0 3495 2859 6354 6354 6354 3494 0 6353-2859 6353-6354z"/>
+                                <path d="M488918 31195l2372 361 1589 222 3189 415 3567 468 2705 398 1342 225 1109 214 1103 238 1174 296 1154 352 1211 444 1178 517 579 287 562 312 735 448 710 484 681 521 854 743 796 809 739 862 488 652 452 674 406 702 267 525 247 542 233 578 210 587 197 616 172 624 292 1260 229 1273 144 960 119 965 185 1929 156 2418 98 2401 66 3173 16 2121 9 4294 0 191687c0 5689-4655 10343-10344 10343l-93030 0c-5688 0-10343-4654-10343-10343l0-191687 8-4294 17-2121 65-3173 99-2401 156-2418 185-1929 118-965 145-960 229-1273 291-1260 173-624 197-616 209-587 234-578 247-542 266-526 407-701 451-674 489-652 739-862 796-809 853-743 682-521 710-484 735-448 562-312 579-287 1178-517 1211-444 1153-353 1174-295 1104-238 1109-214 1342-226 2704-397 3567-468 3190-415 1588-221 2373-362 1551-267 1552-295 1437-304 1428-336 1473-390 1458-435 1736-596 1711-673 1679-747 1638-825 1601-899 1297-804 1268-858 1236-903 1194-952 1035-887 1001-915 973-953 255-262 256 262 972 953 1002 915 1034 887 1195 952 1236 903 1268 858 1297 804 1601 899 1637 825 1679 747 1712 673 1736 596 1457 435 1474 389 1428 337 1437 304 1551 295 1552 267zm36053 310472l0-36325 6925 0c1625 0 2955-1330 2955-2955l0-25041c0-1625-1330-2955-2955-2955l-3174 0c3920-4434 6307-10252 6307-16599l0-191687-5-4183-16-2072-58-3075-73-2261-115-2221-156-2163-210-2102-271-2027-336-1950-193-944-214-928-319-1211-358-1182-398-1153-554-1404-628-1371-706-1338-784-1306-866-1284-957-1260-1026-1219-1124-1191-595-582-620-579-870-751-916-731-961-706-1309-878-1387-829-1478-781-1564-726-1654-669-866-312-886-291-907-275-928-259-998-250-1026-234-1317-267-1351-250-1412-234-1436-218-1934-267-3899-509-2582-336-1272-181-1876-283-1371-234-1342-255-1511-324-1445-361-1375-410-1325-464-1248-509-1170-555-1100-586-669-395-641-402-656-443-624-451-1125-891-722-628-669-628-641-641-591-628-804-915-489-587-862-1092-1424-1892-1022-1367-574-701-267-284-349-312-357-250-239-131-254-116-324-114-337-91-423-82-435-53-603-45-406-17-830-8-829 8-406 17-604 45-435 53-423 82-336 91-324 114-255 116-238 131-357 250-349 312-267 284-574 701-1022 1367-1425 1892-862 1092-488 587-805 915-591 628-640 641-669 628-723 628-1124 891-624 451-657 443-640 402-669 395-1100 586-1170 555-1248 509-1326 464-1375 410-1444 361-1511 324-1342 255-1371 234-1876 283-1272 181-2582 336-3900 509-1933 267-1436 218-1413 234-1350 250-1317 267-1027 234-997 250-928 259-907 275-887 291-866 312-1654 669-1564 726-1477 781-1388 829-1309 878-961 706-915 731-870 751-620 579-595 582-1124 1191-1027 1219-956 1260-866 1284-784 1306-706 1338-628 1371-554 1404-398 1153-358 1182-320 1211-213 928-193 944-337 1950-271 2027-209 2102-156 2163-115 2221-74 2261-57 3075-17 2072-4 4183 0 191687c0 6347 2386 12165 6306 16599l-3486 0c-1625 0-2955 1330-2955 2955l0 25041c0 1625 1330 2955 2955 2955l6924 0 0 36325c0 3495 2859 6354 6354 6354 3495 0 6354-2859 6354-6354l0-36325 9444 0 0 36325c0 3495 2859 6354 6354 6354 3494 0 6354-2859 6354-6354l0-36325 9444 0 0 36325c0 3495 2859 6354 6354 6354 3494 0 6353-2859 6353-6354l0-36325 9445 0 0 36325c0 3495 2859 6354 6354 6354 3494 0 6354-2859 6354-6354l0-36325 9444 0 0 36325c0 3495 2859 6354 6354 6354 3494 0 6353-2859 6353-6354l0-36325 9445 0 0 36325c0 3495 2859 6354 6354 6354 3494 0 6353-2859 6353-6354z"/>
+                                <path d="M645568 31195l2372 361 1589 222 3189 415 3567 468 2705 398 1342 225 1109 214 1103 238 1174 296 1154 352 1211 444 1178 517 578 287 563 312 735 448 710 484 681 521 854 743 796 809 739 862 488 652 452 674 406 702 267 525 246 542 234 578 210 587 197 616 172 624 292 1260 229 1273 144 960 119 965 185 1929 156 2418 98 2401 66 3173 16 2121 8 4294 0 191687c0 5689-4654 10343-10343 10343l-93030 0c-5688 0-10343-4654-10343-10343l0-191687 8-4294 17-2121 65-3173 99-2401 156-2418 185-1929 118-965 144-960 230-1273 291-1260 173-624 197-616 209-587 234-578 247-542 266-526 407-701 451-674 489-652 739-862 796-809 853-743 682-521 710-484 735-448 562-312 579-287 1178-517 1211-444 1153-353 1174-295 1104-238 1109-214 1341-226 2705-397 3567-468 3190-415 1588-221 2373-362 1551-267 1552-295 1436-304 1429-336 1473-390 1458-435 1736-596 1711-673 1679-747 1638-825 1601-899 1297-804 1268-858 1236-903 1194-952 1035-887 1001-915 973-953 255-262 256 262 972 953 1002 915 1034 887 1195 952 1235 903 1269 858 1297 804 1601 899 1637 825 1679 747 1712 673 1736 596 1457 435 1474 389 1428 337 1437 304 1551 295 1552 267zm36053 310472l0-36325 6925 0c1625 0 2955-1330 2955-2955l0-25041c0-1625-1330-2955-2955-2955l-3174 0c3920-4434 6306-10252 6306-16599l0-191687-4-4183-16-2072-58-3075-73-2261-115-2221-156-2163-210-2102-271-2027-336-1950-193-944-214-928-319-1211-358-1182-398-1153-554-1404-628-1371-706-1338-784-1306-866-1284-957-1260-1026-1219-1124-1191-595-582-620-579-870-751-916-731-961-706-1309-878-1387-829-1478-781-1564-726-1654-669-866-312-886-291-908-275-927-259-998-250-1026-234-1318-267-1350-250-1412-234-1437-218-1933-267-3899-509-2582-336-1272-181-1876-283-1371-234-1342-255-1511-324-1445-361-1375-410-1325-464-1248-509-1170-555-1100-586-669-395-641-402-656-443-624-451-1125-891-722-628-669-628-641-641-591-628-804-915-489-587-862-1092-1424-1892-1022-1367-574-701-267-284-349-312-357-250-239-131-254-116-324-114-337-91-423-82-435-53-603-45-407-17-829-8-829 8-406 17-604 45-435 53-423 82-336 91-325 114-254 116-238 131-357 250-349 312-267 284-574 701-1023 1367-1424 1892-862 1092-488 587-805 915-591 628-640 641-669 628-723 628-1125 891-623 451-657 443-640 402-669 395-1100 586-1170 555-1248 509-1326 464-1375 410-1445 361-1510 324-1342 255-1371 234-1876 283-1272 181-2582 336-3900 509-1933 267-1436 218-1413 234-1350 250-1317 267-1027 234-997 250-928 259-907 275-887 291-866 312-1654 669-1564 726-1477 781-1388 829-1309 878-961 706-915 731-870 751-620 579-595 582-1125 1191-1026 1219-956 1260-866 1284-784 1306-706 1338-628 1371-554 1404-399 1153-357 1182-320 1211-213 928-193 944-337 1950-271 2027-209 2102-156 2163-115 2221-74 2261-57 3075-17 2072-4 4183 0 191687c0 6347 2386 12165 6306 16599l-3486 0c-1625 0-2955 1330-2955 2955l0 25041c0 1625 1330 2955 2955 2955l6924 0 0 36325c0 3495 2859 6354 6354 6354 3495 0 6354-2859 6354-6354l0-36325 9444 0 0 36325c0 3495 2859 6354 6354 6354 3494 0 6354-2859 6354-6354l0-36325 9444 0 0 36325c0 3495 2859 6354 6354 6354 3494 0 6353-2859 6353-6354l0-36325 9445 0 0 36325c0 3495 2859 6354 6354 6354 3494 0 6354-2859 6354-6354l0-36325 9444 0 0 36325c0 3495 2859 6354 6354 6354 3494 0 6353-2859 6353-6354l0-36325 9445 0 0 36325c0 3495 2859 6354 6354 6354 3494 0 6353-2859 6353-6354z"/>
+                                <circle cx="345750" cy="174045" r="32628"/>
+                                <path d="M56696 86353c5112-6284 11779-9415 19959-9415 14272 0 21472 8052 21600 24156l0 44605-11546 0 0-44648c-42-4856-1150-8457-3344-10778-2173-2322-5581-3494-10203-3494-3728 0-7030 1001-9863 2982-2812 2003-5027 4623-6603 7861l0 48077-11546 0 0-95856 11546 0 0 36510z"/>
+                                <polygon points="89148 251853 77539 251853 77539 174934 54256 183475 54256 172995 87338 160598 89148 160598 "/>
+                                <path d="M213345 86353c5113-6284 11780-9415 19960-9415 14272 0 21472 8052 21599 24156l0 44605-11545 0 0-44648c-42-4856-1150-8457-3344-10778-2173-2322-5581-3494-10204-3494-3727 0-7029 1001-9862 2982-2812 2003-5027 4623-6604 7861l0 48077-11545 0 0-95856 11545 0 0 36510z"/>
+                                <path d="M258995 251853l-59538 0 0-8329 31462-34955c4665-5283 7882-9586 9650-12888 1768-3323 2641-6752 2641-10288 0-4751-1427-8627-4303-11673-2875-3046-6688-4559-11481-4559-5752 0-10204 1640-13377 4899-3196 3281-4772 7839-4772 13655l-11567 0c0-8351 2706-15124 8095-20279 5389-5155 12589-7733 21621-7733 8435 0 15124 2216 20023 6646 4921 4431 7370 10332 7370 17702 0 8946-5687 19597-17105 31952l-24326 26392 45607 0 0 9458z"/>
+                                <path d="M426923 78216l298 7456c4963-5816 11631-8734 20045-8734 9436 0 15870 3621 19278 10864 2236-3259 5176-5879 8776-7860 3578-2003 7839-3004 12759-3004 14805 0 22324 7839 22580 23517l0 45244-11545 0 0-44520c0-4814-1108-8435-3302-10821-2215-2386-5900-3579-11120-3579-4281 0-7838 1278-10671 3835-2812 2556-4474 5985-4921 10310l0 44775-11609 0 0-44200c0-9820-4814-14720-14421-14720-7563 0-12739 3217-15529 9671l0 49249-11546 0 0-67483 10928 0z"/>
+                                <polygon points="480773 251853 469164 251853 469164 174934 445881 183475 445881 172995 478962 160598 480773 160598 "/>
+                                <path d="M583573 78216l298 7456c4963-5816 11631-8734 20045-8734 9436 0 15870 3621 19278 10864 2236-3259 5176-5879 8776-7860 3578-2003 7839-3004 12759-3004 14805 0 22324 7839 22580 23517l0 45244-11545 0 0-44520c0-4814-1108-8435-3302-10821-2215-2386-5901-3579-11120-3579-4281 0-7838 1278-10671 3835-2812 2556-4474 5985-4921 10310l0 44775-11609 0 0-44200c0-9820-4814-14720-14422-14720-7562 0-12738 3217-15528 9671l0 49249-11546 0 0-67483 10928 0z"/>
+                                <path d="M650619 251853l-59537 0 0-8329 31462-34955c4665-5283 7882-9586 9650-12888 1768-3323 2641-6752 2641-10288 0-4751-1427-8627-4303-11673-2876-3046-6688-4559-11481-4559-5752 0-10204 1640-13378 4899-3195 3281-4771 7839-4771 13655l-11567 0c0-8351 2705-15124 8095-20279 5389-5155 12589-7733 21621-7733 8435 0 15124 2216 20023 6646 4921 4431 7370 10332 7370 17702 0 8946-5687 19597-17105 31952l-24326 26392 45606 0 0 9458z"/>
+                            </svg>
+                        </div>
+                        <div class="custom-control custom-switch mb-3">
+                            <input type="checkbox" class="custom-control-input" id="switch-same-bri">
+                            <label class="custom-control-label" for="switch-same-bri">Same brightness for all tubes</label>
+                        </div>
+                        <div id="tubes-common-bri">
+                            <div class="form-group row"> 
+                                <label class="col-sm-3 col-form-label">All tubes</label>
+                                <div class="col-sm-9">
+                                    <div class="form-row align-items-center">
+                                        <div class="col-4">
+                                            <input type="number" class="form-control" min="0" max="100" step="1" id="text-bri-comm">
+                                        </div>
+                                        <div class="col-8">
+                                            <input type="range" class="custom-range" min="0" max="100" step="1" id="range-bri-comm">
+                                        </div>
+                                    </div>                                     
+                                </div>
+                            </div>
+                        </div>
+                        <div id="tubes-single-bri">
+                            <div class="form-group row"> 
+                                <label class="col-sm-3 col-form-label">Tube h1</label>
+                                <div class="col-sm-9">
+                                    <div class="form-row align-items-center">
+                                        <div class="col-4">
+                                            <input type="number" class="form-control" min="0" max="100" step="1" id="text-bri-tube1">
+                                        </div>
+                                        <div class="col-8">
+                                            <input type="range" class="custom-range" min="0" max="100" step="1" id="range-bri-tube1">
+                                        </div>
+                                    </div>                                     
+                                </div>
+                            </div>
+                            <div class="form-group row"> 
+                                <label class="col-sm-3 col-form-label">Tube h2</label>
+                                <div class="col-sm-9">
+                                    <div class="form-row align-items-center">
+                                        <div class="col-4">
+                                            <input type="number" class="form-control" min="0" max="100" step="1" id="text-bri-tube2">
+                                        </div>
+                                        <div class="col-8">
+                                            <input type="range" class="custom-range" min="0" max="100" step="1" id="range-bri-tube2">
+                                        </div>
+                                    </div>                                     
+                                </div>
+                            </div>
+                            <div class="form-group row"> 
+                                <label class="col-sm-3 col-form-label">Tube m1</label>
+                                <div class="col-sm-9">
+                                    <div class="form-row align-items-center">
+                                        <div class="col-4">
+                                            <input type="number" class="form-control" min="0" max="100" step="1" id="text-bri-tube3">
+                                        </div>
+                                        <div class="col-8">
+                                            <input type="range" class="custom-range" min="0" max="100" step="1" id="range-bri-tube3">
+                                        </div>
+                                    </div>                                     
+                                </div>
+                            </div>
+                            <div class="form-group row"> 
+                                <label class="col-sm-3 col-form-label">Tube m2</label>
+                                <div class="col-sm-9">
+                                    <div class="form-row align-items-center">
+                                        <div class="col-4">
+                                            <input type="number" class="form-control" min="0" max="100" step="1" id="text-bri-tube4">
+                                        </div>
+                                        <div class="col-8">
+                                            <input type="range" class="custom-range" min="0" max="100" step="1" id="range-bri-tube4">
+                                        </div>
+                                    </div>                                     
+                                </div>
+                            </div>
+                            <div class="form-group row"> 
+                                <label class="col-sm-3 col-form-label">Tube dot</label>
+                                <div class="col-sm-9">
+                                    <div class="form-row align-items-center">
+                                        <div class="col-4">
+                                            <input type="number" class="form-control" min="0" max="100" step="1" id="text-bri-tube5">
+                                        </div>
+                                        <div class="col-8">
+                                            <input type="range" class="custom-range" min="0" max="100" step="1" id="range-bri-tube5">
+                                        </div>
+                                    </div>                                     
+                                </div>
+                            </div>
+                        </div>
+                        <div class="custom-control custom-switch mb-0">
+                            <input type="checkbox" class="custom-control-input" id="switch-cathode-poi">
+                            <label class="custom-control-label" for="switch-cathode-poi">Prevent cathode poisoning</label>
+                        </div>
+                    </div>
+                </div>
+                <div id="modal-msg-box" class="modal pg-show-modal fade" tabindex="-1" role="dialog" aria-labelledby="modal-msg-title" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered" role="document">
+                        <div class="modal-content">
+                            <div class="bg-primary modal-header" id="modal-msg-header">
+                                <h5 class="modal-title text-white" id="modal-msg-title">Message title</h5>
+                                <button id="modal-msg-x" type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true" class="text-white">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <p id="modal-msg-message">Message text</p>
+                            </div>
+                            <div class="modal-footer" id="modal-msg-footer">
+                                <button type="button" class="btn btn-danger" data-action="no" data-dismiss="modal" id="modal-msg-no">No</button>
+                                <button type="button" class="btn btn-success" data-action="yes" id="modal-msg-yes">Yes</button>
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal" id="modal-msg-close">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <footer class="bg-light mt-auto">
+            <div class="container">
+                <div class="py-5 row">
+                    <div class="col-sm-6 mb-4 mb-sm-0 text-center text-sm-right">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="200" height="133" fill="currentColor" viewBox="0 0 19960 13303" class="h-100 svg-header-color svg-image w-auto">
+                            <path d="M3719 1192l91 14 61 9 121 16 137 18 103 15 52 8 42 8 42 10 45 11 44 13 46 17 45 20 22 11 22 12 28 17 27 19 26 20 33 28 30 31 29 33 18 25 18 25 15 27 10 20 10 21 9 22 8 23 7 23 7 24 11 48 9 49 5 37 5 36 7 74 6 93 3 91 3 122 1 81 0 164 0 7327c0 218-178 396-395 396l-3557 0c-217 0-395-178-395-396l0-7327 0-164 1-81 2-122 4-91 6-93 7-74 5-36 5-37 9-49 11-48 7-24 7-23 8-23 9-22 10-21 10-20 15-27 18-25 18-25 29-33 30-31 33-28 26-20 27-19 28-17 21-12 23-11 45-20 46-17 44-13 45-11 42-10 42-8 52-8 103-15 136-18 122-16 61-9 91-14 59-10 59-11 55-12 55-12 56-15 56-17 66-23 66-26 64-28 63-32 61-34 49-31 49-33 47-34 46-36 39-34 39-35 37-37 9-10 10 10 37 37 39 35 39 34 46 36 47 34 49 33 49 31 61 34 63 32 64 28 66 26 66 23 56 17 56 15 55 12 55 12 59 11 59 10zm1378 11869l0-1389 265 0c62 0 113-51 113-113l0-957c0-62-51-113-113-113l-121 0c150-170 241-392 241-635l0-7327 0-160-1-79-2-118-3-86-4-85-6-83-8-80-11-78-13-74-7-36-8-36-12-46-14-45-15-44-21-54-24-52-27-51-30-50-34-49-36-49-39-46-43-46-23-22-24-22-33-29-35-28-37-27-50-33-53-32-56-30-60-28-63-25-33-12-34-11-35-11-35-10-39-9-39-9-50-10-52-10-54-9-55-8-74-10-149-20-98-13-49-7-72-10-52-9-51-10-58-12-55-14-53-16-51-18-47-19-45-21-42-23-26-15-24-15-25-17-24-17-43-34-28-24-25-25-25-24-22-24-31-35-19-22-33-42-54-72-39-53-22-27-10-10-14-12-13-10-9-5-10-4-13-5-12-3-17-3-16-2-23-2-16-1-32 0-31 0-16 1-23 2-16 2-17 3-12 3-13 5-10 4-9 5-13 10-14 12-10 10-22 27-39 53-54 72-33 42-19 22-31 35-22 24-25 24-25 25-28 24-43 34-24 17-25 17-24 15-26 15-42 23-45 21-47 19-51 18-53 16-55 14-58 12-51 10-52 9-72 10-49 7-98 13-150 20-73 10-55 8-54 9-52 10-50 10-40 9-38 9-35 10-35 11-34 11-33 12-63 25-60 28-56 30-53 32-50 33-37 27-35 28-33 29-24 22-23 22-43 46-39 46-37 49-33 49-30 50-27 51-24 52-21 54-15 44-14 45-12 46-8 36-7 36-13 74-11 78-8 80-6 83-4 85-3 86-2 118-1 79 0 160 0 7327c0 243 91 465 241 635l-133 0c-62 0-113 51-113 113l0 957c0 62 51 113 113 113l265 0 0 1389c0 133 109 242 243 242 133 0 242-109 242-242l0-1389 361 0 0 1389c0 133 110 242 243 242 134 0 243-109 243-242l0-1389 361 0 0 1389c0 133 110 242 243 242 134 0 243-109 243-242l0-1389 361 0 0 1389c0 133 109 242 243 242 133 0 243-109 243-242l0-1389 361 0 0 1389c0 133 109 242 243 242 133 0 243-109 243-242l0-1389 361 0 0 1389c0 133 109 242 242 242 134 0 243-109 243-242z"></path>
+                            <path d="M6967 523l11885 0c0 306 248 554 554 554l0 3886c-1740 28-3481 57-5098 325-1616 269-3109 777-4404 1383-1295 606-2393 1310-3491 2014l0-7608c306 0 554-248 554-554zm12993 12226l0-12195c0-305-249-554-554-554l-12993 0c-305 0-555 249-555 554l0 12195c0 305 250 554 555 554l12993 0c305 0 554-249 554-554zm-5642-6896c1607-273 3348-302 5088-330l0 6703c-306 0-554 248-554 555l-11885 0c0-307-248-555-554-555l0-2882c1117-728 2235-1456 3530-2079 1295-623 2768-1139 4375-1412z"></path>
+                            <path d="M9456 800c-123 0-221 175-221 382 0 747 0 1494 0 2241 0 746 0 1493 0 2239-316-659-640-1353-947-2092-322-775-627-1604-945-2476-38-104-88-188-144-239-93 220-275 392-500 472-6 52-9 106-9 161 0 1038 0 2075 0 3111 0 1037 0 2073 0 3110 0 260 98 398 220 312 123-88 226-355 226-604 0-900 0-1800 0-2699 0-899 0-1799 0-2699 316 867 627 1687 951 2456 308 732 630 1420 951 2069 54 109 153 152 260 99 20-9 40-19 60-28 176-83 325-382 325-671 0-796 0-1591 0-2387 0-796 0-1592 0-2388 0-200-104-369-227-369zm1401 0c-123 0-222 156-222 342 0 763 0 1527 0 2289 0 763 0 1526 0 2289 0 186 99 295 222 246 123-48 226-230 226-409 0-737 0-1476 0-2213 0-737 0-1476 0-2213 0-180-103-331-226-331zm3735 3745c-190-253-379-509-568-769-190-261-378-528-567-797 189-311 377-616 567-913 188-294 381-579 568-865 27-41 39-95 39-148 0-141-98-253-217-253-68 0-124 37-161 96-171 271-347 545-519 824-174 283-346 572-519 867-173-264-348-534-518-809-173-278-348-564-518-858-42-72-108-120-181-120-124 0-217 131-217 301 0 75 13 137 44 189 184 311 374 612 562 907 185 289 376 570 563 846-190 329-381 664-568 1010-191 351-381 716-567 1089-32 63-44 137-44 205 0 157 93 256 207 219 73-23 128-87 171-174 173-347 344-687 519-1017 171-323 346-638 519-947 174 254 350 505 525 751 174 246 352 485 526 726 42 59 103 95 176 84 138-22 222-156 222-297 0-59-15-109-44-147zm953-3745c-123 0-221 121-221 265 0 591 0 1182 0 1772 0 590 0 1181 0 1771 0 144 98 248 221 235 123-13 227-135 227-278 0-583 0-1167 0-1751 0-584 0-1168 0-1752 0-142-104-262-227-262zm3372 3395c-582 4-1164 15-1745 32 0-205 0-410 0-615 0-205 0-410 0-615 523-10 1045-18 1568-21 118-1 211-99 211-231 0-132-93-237-211-236-523 2-1045 8-1568 16 0-204 0-408 0-612 0-205 0-408 0-613 581-3 1163-4 1745-5 31 0 60-7 86-19-179-97-321-256-394-448l-1663 0c-123 0-222 117-222 257 0 564 0 1129 0 1693 0 563 0 1128 0 1692 0 140 99 245 222 240 657-28 1313-42 1971-48 117-1 212-100 212-232 0-132-95-236-212-235z"></path>
+                            <path d="M8757 11677c-19 2-44 11-66 31-197 182-388 306-676 327-328 23-571-105-741-316-161-203-248-491-248-839 0-347 86-692 248-1001 169-320 412-605 741-779 287-151 480-137 676-65 23 9 47 3 66-6 92-41 152-183 148-310-3-114-33-161-81-179-228-89-482-106-842 110-370 223-688 599-923 1022-225 406-369 856-369 1324 0 469 146 818 369 1071 237 269 555 436 923 436 362 0 614-158 842-374 48-45 78-107 81-223 4-129-56-238-148-229zm2206 70c-403 24-806 51-1208 78 0-634 0-1269 0-1902 0-634 0-1269 0-1904 0-167-77-270-171-223-92 46-165 221-165 382 0 643 0 1285 0 1926 0 642 0 1285 0 1927 0 226 103 408 233 407 436-3 873-6 1311-9 92-1 169-153 169-343 0-190-77-345-169-339zm1724-5243c-398 116-715 530-939 1110-221 569-358 1302-358 2112 0 808 137 1490 358 1977 225 498 543 800 939 800 393 0 715-322 938-877 225-563 359-1357 359-2275 0-917-133-1687-359-2203-222-506-547-757-938-644zm0 5290c-308 11-546-224-711-611-161-379-250-911-250-1521 0-608 88-1173 250-1611 164-441 403-757 711-836 304-77 545 127 707 521 164 398 253 980 253 1649 0 668-89 1270-253 1705-162 430-403 693-707 704zm3771-562c-18 0-45 9-67 37-196 260-387 438-675 441-328 4-576-259-742-695-165-432-249-1037-249-1727 0-690 84-1307 249-1763 166-457 414-753 742-783 288-26 479 138 675 383 22 27 49 34 67 33 92-6 152-185 148-379-3-174-34-264-82-327-230-305-480-538-842-501-368 38-692 389-923 975-229 583-369 1398-369 2388 0 991 140 1783 369 2330 231 552 555 859 923 859 362 0 612-249 842-571 47-66 79-158 82-333 4-193-56-368-148-367zm2626 544c-164-520-327-1040-490-1559-163-518-326-1037-489-1555 142-359 284-718 426-1077 141-359 284-719 427-1077 26-65 38-159 42-262 7-224-68-401-156-401-56 0-97 77-126 150-209 546-422 1089-633 1633-210 544-420 1089-630 1632 0-493 0-985 0-1478 0-492 0-985 0-1478 0-232-78-425-170-421-92 5-166 204-166 435 0 954 0 1908 0 2862 0 953 0 1907 0 2860 0 232 74 418 166 418 92 0 170-187 170-419 0-289 0-579 0-869 0-290 0-579 0-869 140-358 281-718 421-1076 158 509 318 1020 475 1530 148 476 298 952 445 1428 91-92 202-164 326-208-5-72-18-136-38-199z"></path>
+                            <path d="M2858 4997c-414 0-717 146-946 315l179-1630 1624 0c135 0 241-138 241-322 0-185-106-331-241-331l-1798 0c-157 0-274 146-297 384l-252 2045c-5 46-11 130-11 184 0 277 163 446 370 446 89 0 145-54 196-92 185-154 482-331 862-331 538 0 869 400 869 1030 0 830-432 1084-1093 1084-352 0-655-146-896-323-33-23-73-39-117-39-135 0-224 154-224 331 0 161 56 223 112 277 280 246 672 445 1193 445 1064 0 1534-753 1534-1737 0-999-459-1736-1305-1736z"></path>
+                        </svg>
+                    </div>
+                    <div class="col-sm-6 text-center text-sm-left">
+                        <p class="mb-0">created by</p>
+                        <h3 class="mb-3">Marco Nenni</h3>
+                        <p class="mb-1">Firmware v. <span id="firmware-v"></span></p>
+                        <p class="mb-1">Web frontend v. <span id="web-v"></span></p>
+                        <a name="anchor" href="https://github.com/ciberbob1987/Nixie_Clock" class="mb-0 text-info">NixieClock on GitHub</a>
+                    </div>
+                </div>
+            </div>
+        </footer>
+        <!-- JavaScript -->
+        <!-- Placed at the end of the document so the pages load faster -->
+        <script src="js/jquery.min.js"></script>
+        <script src="js/popper.js"></script>
+        <script src="js/bootstrap.min.js"></script>
+        <script src="js/colorp.min.js"></script>
+        <script src="js/main.js"></script>
+    </body>
+</html>
