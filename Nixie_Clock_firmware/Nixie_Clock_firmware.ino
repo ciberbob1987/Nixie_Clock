@@ -35,27 +35,32 @@ GlobalConfig  currConf;
 QueueHandle_t masterQueue, slaveQueue;
 
 RTC_DS3231        rtc;
+
 SemaphoreHandle_t rtcSemaphore;
 SemaphoreHandle_t nvsSemaphore;
+SemaphoreHandle_t tubesSemaphore;
 
 TimeChangeRule dstStart = {"DST", 0, 0, 0, 0, 0};
 TimeChangeRule dstEnd = {"STD", 0, 0, 0, 0, 0};
 Timezone       timeZoneObj(dstEnd);
 
 TaskHandle_t   slaveCoreTaskHandler;
+TaskHandle_t   cathodePoiTaskHandler;
 
 AsyncWebServer webServer(80);
 
 Preferences prefsNVS;
 
 uint8_t  masterCore, slaveCore;
-bool     numOnTubes = false;
 
 uint8_t  wifiTimeCounter;
 
 uint32_t lastNTPSync;
 bool     lastNTPSyncSuccess;
 uint32_t currTime;
+
+uint8_t cathodePoiMinCounter = 0;
+bool    cathodePoiOngoing    = false;
 
 void setup() {
   
@@ -101,6 +106,7 @@ bool mainBootSequence() {
     for (uint8_t nCh=0; nCh<DAC_CHANNELS; nCh++)
       writeDAC(nDac, nCh, 0);
   
+  tubesSemaphore = xSemaphoreCreateMutex();
   
   /* ---------------------------- */
   /* --- Queue initialization --- */
@@ -344,7 +350,11 @@ bool mainBootSequence() {
     doc["rgb_color"][1] = (currConf.rgbLedColor & 0x00FF00) >> 8;
     doc["rgb_color"][2] = (currConf.rgbLedColor & 0x0000FF);
     
-    doc["cath_p_on"] = currConf.catPoiOn;
+    doc["cath_p_on"]   = currConf.catPoiOn;
+    doc["cath_p_h"]    = currConf.catPoiAtH;
+    doc["cath_p_min"]  = currConf.catPoiAtMin;
+    doc["cath_p_dur"]  = currConf.catPoiDurMin;
+    
     doc["format_12_h"] = currConf.timeFormat12;
     
     String jsonStr;
@@ -427,7 +437,10 @@ void execCmdHandler(AsyncWebServerRequest *request, uint8_t *data, size_t len, s
       break;
     
     case COMMAND_CODE::CATH_POI:
-      newConf.catPoiOn = doc["cath_p_on"];
+      newConf.catPoiOn     = doc["cath_p_on"];
+      newConf.catPoiAtH    = doc["cath_p_h"];
+      newConf.catPoiAtMin  = doc["cath_p_min"];
+      newConf.catPoiDurMin = doc["cath_p_dur"];
       break;
     
     case COMMAND_CODE::TUBES_BRIG:
@@ -494,7 +507,7 @@ void execCmdHandler(AsyncWebServerRequest *request, uint8_t *data, size_t len, s
         DateTime newTimeLocal(year, month, day, hour, min, sec);
         DateTime newTimeUTC(timeZoneObj.toUTC(newTimeLocal.unixtime()));
         
-        if (xSemaphoreTake(rtcSemaphore, SEM_TAKE_DELAY_MS)) {
+        if (xSemaphoreTake(rtcSemaphore, SEM_TAKE_DELAY_TICKS)) {
           rtc.adjust(newTimeUTC);
           xSemaphoreGive(rtcSemaphore);
         }
@@ -591,8 +604,9 @@ void writeDAC(uint8_t nDac, uint8_t channel, uint8_t value) {
 
 void setTubeDigit(uint8_t tube, int8_t digit) {
   float intensity = (( (float) currConf.nixieBri[tube] )/100.0 )*numTubes[tube].scaleDAC100;
-  if (intensity > 255) intensity = 255;
-  if (digit == -1)     intensity = 0;
+  if (intensity > 255)        intensity = 255;
+  else if (digit == -1)       intensity = 0;
+  else if (cathodePoiOngoing) intensity = CATHODE_POI_INTENSITY;
   
   if ( (numTubes[tube].digitOn >= 0) && (numTubes[tube].digitOn <= 9) )
     writeDAC(numTubes[tube].chMap[numTubes[tube].digitOn].nDAC, numTubes[tube].chMap[numTubes[tube].digitOn].channel, 0);
@@ -619,7 +633,7 @@ void setDots(bool dotState) {
 }
 
 void displayTimeOnTubes(uint32_t nowUtcUnixTime) {
-  if (numOnTubes) return;
+  if (!xSemaphoreTake(tubesSemaphore, SEM_TAKE_DELAY_TICKS)) return;
   
   DateTime nowTimeLocal(timeZoneObj.toLocal(nowUtcUnixTime));
   
@@ -644,11 +658,11 @@ void displayTimeOnTubes(uint32_t nowUtcUnixTime) {
   setTubeDigit(3, m2);
   
   setDots(true);
+  
+  xSemaphoreGive(tubesSemaphore);
 }
 
 void displayNumberOnTubes(uint16_t number) {
-  numOnTubes = true;
-  
   uint8_t h1, h2, m1, m2;
   
   h1 = (number/1000U) % 10;
@@ -811,7 +825,7 @@ void wifiDisconnect() {
 }
 
 bool syncNTP() {
-  Serial.println("n\> NTP sync");
+  Serial.println("\n> NTP sync");
   
   uint32_t secSince1900 = sendNTPpacket();
   
@@ -824,7 +838,7 @@ bool syncNTP() {
   DateTime utcTime(utcTimeInt);
   DateTime rtcTime;
   
-  if (xSemaphoreTake(rtcSemaphore, SEM_TAKE_DELAY_MS)) {
+  if (xSemaphoreTake(rtcSemaphore, SEM_TAKE_DELAY_TICKS)) {
     rtc.adjust(utcTime);
     rtcTime = rtc.now();
     xSemaphoreGive(rtcSemaphore);
@@ -929,7 +943,7 @@ bool readBinaryData(void* destPnt, const size_t size, const char* key) {
   
   size_t bytesRd = 0;
   
-  if (xSemaphoreTake(nvsSemaphore, SEM_TAKE_DELAY_MS)) {
+  if (xSemaphoreTake(nvsSemaphore, SEM_TAKE_DELAY_TICKS)) {
     bytesRd = prefsNVS.getBytes(key, tmpBuffer, size);
     xSemaphoreGive(nvsSemaphore);
   }
@@ -954,7 +968,7 @@ bool saveBinaryData(const void* sourcePnt, const size_t size, const char* key) {
   
   size_t bytesWr = 0;
 
-  if (xSemaphoreTake(nvsSemaphore, SEM_TAKE_DELAY_MS)) {
+  if (xSemaphoreTake(nvsSemaphore, SEM_TAKE_DELAY_TICKS)) {
     bytesWr = prefsNVS.putBytes(key, (const void*) sourcePnt, size);
     xSemaphoreGive(nvsSemaphore);
   }
@@ -977,7 +991,7 @@ uint32_t readIntData(const char* key) {
   
   uint32_t destInt = 0;
   
-  if (xSemaphoreTake(nvsSemaphore, SEM_TAKE_DELAY_MS)) {
+  if (xSemaphoreTake(nvsSemaphore, SEM_TAKE_DELAY_TICKS)) {
     destInt = prefsNVS.getUInt(key, 0);
     xSemaphoreGive(nvsSemaphore);
   }
@@ -995,7 +1009,7 @@ bool saveIntData(const uint32_t sourceInt, const char* key) {
   
   size_t bytesWr = 0;
   
-  if (xSemaphoreTake(nvsSemaphore, SEM_TAKE_DELAY_MS)) {
+  if (xSemaphoreTake(nvsSemaphore, SEM_TAKE_DELAY_TICKS)) {
     bytesWr = prefsNVS.putUInt(key, sourceInt);
     xSemaphoreGive(nvsSemaphore);
   }
@@ -1061,8 +1075,13 @@ void loop() {
 }
 
 
+/********************************************
+*-*-*--*-*-*-*-*-*-*-*-*-*-*-*--*-*-*-*-*-*-*
+* ---------- SLAVE CORE FUNCTIONS --------- *
+*-*-*--*-*-*-*-*-*-*-*-*-*-*-*--*-*-*-*-*-*-*
+********************************************/
 
-/* SLAVE CORE */
+
 void IRAM_ATTR RTCAlarmIsr() {
   SLAVE_QUEUE_EVENT qItemSlave = SLAVE_QUEUE_EVENT::RTC_ALARM_FIRED;
   xQueueSendToFrontFromISR(slaveQueue, &qItemSlave, NULL);
@@ -1084,25 +1103,71 @@ void coreSlaveTask(void* parameter) {
       if (qItem == SLAVE_QUEUE_EVENT::UPDATE_TIME_ON_TUBES || qItem == SLAVE_QUEUE_EVENT::RTC_ALARM_FIRED) {
         //Serial.println("Update time on tubes");
         
-        if (xSemaphoreTake(rtcSemaphore, SEM_TAKE_DELAY_MS)) {
+        if (xSemaphoreTake(rtcSemaphore, SEM_TAKE_DELAY_TICKS)) {
           if (rtc.alarmFired(1)) rtc.clearAlarm(1);
           currTime = rtc.now().unixtime();
           xSemaphoreGive(rtcSemaphore);
           
+          DateTime nowTimeLocal(timeZoneObj.toLocal(currTime));
+          
+          if (cathodePoiOngoing) {
+            cathodePoiMinCounter++;
+            if ((cathodePoiMinCounter >= currConf.catPoiDurMin) || !currConf.catPoiOn) cathodePoiOngoing = false;
+          }
+          else if (currConf.catPoiOn && nowTimeLocal.hour() == currConf.catPoiAtH && nowTimeLocal.minute() == currConf.catPoiAtMin) {
+            // Start cathode poisoning prevention cycle
+            cathodePoiOngoing = true;
+            cathodePoiMinCounter = 0;
+            
+            xTaskCreatePinnedToCore(
+            cathodePoisoningCycleTask, // Function to implement the task
+            "cathodePoiT", // Name of the task
+            1000,          // Stack size in words
+            NULL,          // Task input parameter
+            1,             // Priority of the task
+            &cathodePoiTaskHandler, // Task handle
+            slaveCore);    // Core
+          }
+          
           displayTimeOnTubes(currTime);
         }
         else {
-          xQueueSendToFrontFromISR(slaveQueue, &qItem, NULL);
+          xQueueSendToFront(slaveQueue, &qItem, NULL);
         }
       }
       
       
       if (qItem == SLAVE_QUEUE_EVENT::RTC_ALARM_FIRED) {
         MASTER_QUEUE_EVENT qItemMaster = MASTER_QUEUE_EVENT::RTC_MINUTE_TOCK;
-        xQueueSendToBackFromISR(masterQueue, &qItemMaster, NULL);
+        xQueueSendToBack(masterQueue, &qItemMaster, NULL);
       }
     }
     
     vTaskDelay(2);
   }
+}
+
+void cathodePoisoningCycleTask(void* parameter) {
+  while (!xSemaphoreTake(tubesSemaphore, SEM_TAKE_DELAY_TICKS)) vTaskDelay(2);
+  
+  setDots(false);
+  uint8_t digit = 9;
+  
+  const TickType_t xPeriod = pdMS_TO_TICKS(CATHODE_POI_DIGIT_ON_TIME_MS);
+  TickType_t xLastWakeTime = xTaskGetTickCount();
+  while (cathodePoiOngoing) {
+    setTubeDigit(0, digit);
+    setTubeDigit(1, digit);
+    setTubeDigit(2, digit);
+    setTubeDigit(3, digit);
+    
+    if (digit > 0) digit--;
+    else digit = 9;
+    
+    vTaskDelayUntil(&xLastWakeTime, xPeriod);
+  }
+  
+  xSemaphoreGive(tubesSemaphore);
+  // Required to end the task
+  vTaskDelete(NULL);
 }

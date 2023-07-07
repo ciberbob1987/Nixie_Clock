@@ -281,8 +281,16 @@ $(function () {
   fillSettingsFields(["version", "wifi", "time", "dst", "rgb", "tubes"]);
   
   /* Direct switches events listeners */
-  $("#switch-rgb-on").change(function()      { constructRgbLedsCommand() });
-  $("#switch-cathode-poi").change(function() { constructCatodePoiCommand() });
+  $("#switch-rgb-on").change(function()      { constructRgbLedsCommand(); });
+  $("#switch-cathode-poi").change(function() {
+    $("#fs-cathode-poi-h").prop('disabled', !$("#switch-cathode-poi").is(":checked"));
+    constructCatodePoiCommand();
+  });
+  
+  // Number field listener (without associated slider)
+  $("#cathode-poi-h").on("change", function(){ constructCatodePoiCommand(); });
+  $("#cathode-poi-min").on("change", function(){ constructCatodePoiCommand(); });
+  $("#cathode-poi-duration").on("change", function(){ constructCatodePoiCommand(); });
   
   /* Tubes brigthness switch event listener */
   $("#switch-same-bri").change(function() {
@@ -448,7 +456,10 @@ function constructCatodePoiCommand() {
   var jsonCmd = {};
   jsonCmd.cmd = commandEnum.CATH_POI;
   
-  jsonCmd.cath_p_on = $("#switch-cathode-poi").is(":checked");
+  jsonCmd.cath_p_on  = $("#switch-cathode-poi").is(":checked");
+  jsonCmd.cath_p_h   = parseInt($("#cathode-poi-h").val());
+  jsonCmd.cath_p_min = parseInt($("#cathode-poi-min").val());
+  jsonCmd.cath_p_dur = parseInt($("#cathode-poi-duration").val());
   
   sendCommand(jsonCmd);
 }
@@ -691,6 +702,10 @@ function fillSettingsFields(groupArr) {
           $("#switch-same-bri").prop( "checked", sameBri );
           toggleBriInputs(false);
           $("#switch-cathode-poi").prop( "checked", data.cath_p_on );
+          $("#cathode-poi-h").val( data.cath_p_h );
+          $("#cathode-poi-min").val( data.cath_p_min );
+          $("#cathode-poi-duration").val( data.cath_p_dur );
+          $("#fs-cathode-poi-h").prop('disabled', !data.cath_p_on);
         }
 
         // fill rgb leds section

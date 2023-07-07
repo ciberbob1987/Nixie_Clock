@@ -132,7 +132,7 @@
                                     <div class="col-8 col-sm-7">
                                         <div class="no-gutters row">
                                             <div class="col-5 col-sm-4 mr-2">
-                                                <input type="number" class="form-control" min="0" max="100" step="1" id="ntp-interval">
+                                                <input type="number" class="form-control" min="0" max="120" step="1" id="ntp-interval">
                                             </div>
                                             <label class="col-form-label">hours</label>
                                         </div>
@@ -247,7 +247,7 @@
                                 <div class="col-8 col-sm-9">
                                     <div class="no-gutters row">
                                         <div class="col-4 col-sm-3 mr-2">
-                                            <input type="number" class="form-control" min="0" max="90" step="1" id="dst-start-h">
+                                            <input type="number" class="form-control" min="0" max="23" step="1" id="dst-start-h">
                                         </div>
                                         <label class="col-form-label">:&nbsp;00</label>
                                     </div>
@@ -302,7 +302,7 @@
                                 <div class="col-8 col-sm-9">
                                     <div class="no-gutters row">
                                         <div class="col-4 col-sm-3 mr-2">
-                                            <input type="number" class="form-control" min="0" max="90" step="1" id="dst-end-h">
+                                            <input type="number" class="form-control" min="0" max="23" step="1" id="dst-end-h">
                                         </div>
                                         <label class="col-form-label">:&nbsp;00</label>
                                     </div>
@@ -344,7 +344,7 @@
                 </div>
                 <div class="card">
                     <div class="card-header">
-                        <h5 class="card-title mb-0">Nixie tubes brightness</h5>
+                        <h5 class="card-title mb-0">Nixie tubes</h5>
                     </div>
                     <div class="card-body">
                         <div class="row">
@@ -450,10 +450,37 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="custom-control custom-switch mb-0">
+                        <div class="custom-control custom-switch mb-3">
                             <input type="checkbox" class="custom-control-input" id="switch-cathode-poi">
-                            <label class="custom-control-label" for="switch-cathode-poi">Prevent cathode poisoning</label>
+                            <label class="custom-control-label" for="switch-cathode-poi">Run cathode poisoning prevention cycle every day</label>
                         </div>
+                        <fieldset id="fs-cathode-poi-h" disabled>
+                            <div class="form-group row"> 
+                                <label class="col-4 col-form-label col-sm-3">at (hh:mm)</label>
+                                <div class="col-8 col-sm-9">
+                                    <div class="no-gutters row">
+                                        <div class="col-4 mr-2">
+                                            <input type="number" class="form-control" min="0" max="23" step="1" id="cathode-poi-h">
+                                        </div>
+                                        <label class="col-form-label">:</label>
+                                        <div class="col-4 ml-2">
+                                            <input type="number" class="form-control" min="0" max="59" step="1" id="cathode-poi-min">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group row"> 
+                                <label class="col-4 col-form-label col-sm-3">for</label>
+                                <div class="col-8 col-sm-9">
+                                    <div class="no-gutters row">
+                                        <div class="col-4 mr-2">
+                                            <input type="number" class="form-control" min="0" max="40" step="1" id="cathode-poi-duration">
+                                        </div>
+                                        <label class="col-form-label">minutes</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </fieldset>
                     </div>
                 </div>
                 <div id="modal-msg-box" class="modal pg-show-modal fade" tabindex="-1" role="dialog" aria-labelledby="modal-msg-title" aria-hidden="true">

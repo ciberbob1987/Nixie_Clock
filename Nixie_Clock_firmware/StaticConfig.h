@@ -10,16 +10,15 @@ const uint16_t UPD_JSON_MAX_SIZE    = 1024;
 const char     DEFAULT_AP_SSID[]    = "NixieClock";
 const char     DEFAULT_AP_KEY[]     = "";   // Length must be 0 or >8
 const char     HIDDEN_WIFI_KEY[]    = "**********";
-
-const char     NVS_NAMESPACE[]         = "nixieclock";
-const char     NVS_KEY_CONFIG[]        = "conf.data";
-const char     NVS_KEY_LAST_NTP_SYNC[] = "ntpsync.data";
-
 const char     HOST_NAME[]          = "NixieClock";
 
 const char     STR_OK[]             = "OK";
 
-const uint32_t SEM_TAKE_DELAY_MS    = 30;
+const char     NVS_NAMESPACE[]         = "nixieclock"; // 15 characters max
+const char     NVS_KEY_CONFIG[]        = "conf.data";
+const char     NVS_KEY_LAST_NTP_SYNC[] = "ntpsync.data";
+
+const uint32_t SEM_TAKE_DELAY_TICKS = 30;
 
 const uint8_t  WIFI_ON_TIME_MIN     = 10;
 
@@ -56,6 +55,9 @@ const uint8_t  PWM_CH_LED_R = 0;
 const uint8_t  PWM_CH_LED_G = 1;
 const uint8_t  PWM_CH_LED_B = 2;
 const uint16_t LED_PWM_FREQ = 1000;
+
+const uint16_t CATHODE_POI_DIGIT_ON_TIME_MS = 200;
+const uint16_t CATHODE_POI_INTENSITY        = 200;
 
 const uint8_t DAC_CH_ADDR[] = {
   0b00001000,
@@ -125,7 +127,11 @@ struct GlobalConfig {
   
   uint8_t nixieBri[4] = {70, 70, 70, 70};
   uint8_t dotLampBri  = 70;
-  bool    catPoiOn    = true;
+  
+  bool    catPoiOn     = true;
+  uint8_t catPoiAtH    = 4;
+  uint8_t catPoiAtMin  = 0;
+  uint8_t catPoiDurMin = 20;
   
   bool     rgbLedOn    = true;
   uint8_t  rgbLedBri   = 50;
