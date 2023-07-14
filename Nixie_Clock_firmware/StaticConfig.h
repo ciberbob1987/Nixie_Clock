@@ -1,7 +1,11 @@
 #ifndef _StaticConfig_h
 #define _StaticConfig_h
 
-const char     FIRMWARE_V[]         = "1.0";
+const char     FIRMWARE_V[] = "1.2.0";
+
+const char     FFAT_IMAGE_VERSION_FILE[]        = "/version.txt";
+const uint8_t  FFAT_IMAGE_VERSION_FILE_MAX_SIZE = 15;
+
 const uint16_t REBOOT_DELAY_MS      = 2000; // delay ms before ESP restart
 
 const uint8_t  CONF_STR_LEN         = 60;
@@ -13,6 +17,10 @@ const char     HIDDEN_WIFI_KEY[]    = "**********";
 const char     HOST_NAME[]          = "NixieClock";
 
 const char     STR_OK[]             = "OK";
+
+const uint8_t  OTA_CHECK_TIME_H          = 10;
+const uint8_t  OTA_CHECK_TIME_MIN        = 0;
+const char     OTA_FIRMWARE_V_JSON_URL[] = "https://github.com/ciberbob1987/Nixie_Clock/releases/latest/download/OTA_info.json";
 
 const char     NVS_NAMESPACE[]         = "nixieclock"; // 15 characters max
 const char     NVS_KEY_CONFIG[]        = "conf.data";
@@ -75,8 +83,16 @@ const uint8_t DAC_CH_ADDR[] = {
 };
 
 // main queue events
+enum class OTA_UPDATE : uint8_t {
+  FIRMWARE,
+  DATA_PARTITION
+};
+
+// main queue events
 enum class MASTER_QUEUE_EVENT : uint8_t {
   CONNECT_WIFI,
+  CHECK_FIRMWARE_UPD,
+  CHECK_DATA_PART_UPD,
   NTP_SYNC,
   RTC_MINUTE_TOCK,
   REBOOT
@@ -109,7 +125,7 @@ struct DSTInfo {
 struct GlobalConfig {
   char    netSSID[CONF_STR_LEN] = "WifiNetworkName";
   char    netKey[CONF_STR_LEN]  = "WifiNetworkPass";
-  bool    netAPMode             = false;
+  bool    netAPMode             = true;
   
   char    ntpAddr[CONF_STR_LEN] = "pool.ntp.org";
   bool    ntpSync     = true;

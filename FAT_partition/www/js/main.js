@@ -154,8 +154,6 @@
     "WARNING" : 102,
     "ERROR"   : 103
   });
-  
-  const webVersion = Object.freeze("1.1");
 
 $(function () {
   
@@ -581,8 +579,8 @@ function fillSettingsFields(groupArr) {
       dataType: "json",
       success: function (data) {
         
-        $("#firmware-v").text(data.version);
-        $("#web-v").text(webVersion);
+        $("#firmware-v").text(data.firmwareV);
+        $("#web-v").text(data.dataV);
       },
       error: function( jqXhr, textStatus, errorThrown ) { riseLoadingError(); }
     });

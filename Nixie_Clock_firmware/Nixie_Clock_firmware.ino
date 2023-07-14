@@ -2,33 +2,42 @@
 #include "NixieTubesDigitMap.h"
 
 // WiFi network handling
-#include <WiFi.h>              // ESP32 core
+#include <WiFi.h>               // ESP32 core
 
 // FFAT partition handling
-#include <FFat.h>              // ESP32 core
+#include <FFat.h>               // ESP32 core
 
 // NVS partition handling
-#include <Preferences.h>       // ESP32 core
+#include <Preferences.h>        // ESP32 core
 
 // UTP needed for NTP request
-#include <WiFiUdp.h>           // ESP32 core
+#include <WiFiUdp.h>            // ESP32 core
 
 // SPI needed for DAC communication
-#include <SPI.h>               // ESP32 core
+#include <SPI.h>                // ESP32 core
+
+// HTTP client for OTA updates
+#include <HTTPClient.h>         // ESP32 core
 
 // RTC DS3231 and DateTime handling
-#include <RTClib.h>            // https://github.com/adafruit/RTClib
+#include <RTClib.h>             // https://github.com/adafruit/RTClib
 
 // DST and timezone handling
-#include <Timezone.h>          // https://github.com/JChristensen/Timezone
-                               // require TimeLib https://github.com/PaulStoffregen/Time
+#include <Timezone.h>           // https://github.com/JChristensen/Timezone
+                                // require TimeLib https://github.com/PaulStoffregen/Time
 
 // Web server
-#include <ESPAsyncWebServer.h> // https://github.com/me-no-dev/ESPAsyncWebServer
-                               // require AsyncTCP https://github.com/me-no-dev/AsyncTCP
+#include <ESPAsyncWebServer.h>  // https://github.com/me-no-dev/ESPAsyncWebServer
+                                // require AsyncTCP https://github.com/me-no-dev/AsyncTCP
 
 // JSON handling
-#include <ArduinoJson.h>       // https://github.com/bblanchon/ArduinoJson
+#include <ArduinoJson.h>        // https://github.com/bblanchon/ArduinoJson
+
+// OTA updates from web server
+#include <EnhancedHTTPUpdate.h> // https://github.com/ciberbob1987/EnhancedHTTPUpdate
+
+// Semantic version compare
+#include <SemanticVersion.h>   // https://github.com/ciberbob1987/SemanticVersion
 
 /*** MASTER CORE GLOBAL VARIABLES ***/
 GlobalConfig  currConf;
@@ -53,14 +62,11 @@ Preferences prefsNVS;
 
 uint8_t  masterCore, slaveCore;
 
-uint8_t  wifiTimeCounter;
+volatile bool     cathodePoiOngoing = false;
+volatile uint32_t currTime = 0;
+volatile uint32_t lastNTPSync = 0;
 
-uint32_t lastNTPSync;
-bool     lastNTPSyncSuccess;
-uint32_t currTime;
-
-uint8_t cathodePoiMinCounter = 0;
-bool    cathodePoiOngoing    = false;
+char dataPartitionVersion[FFAT_IMAGE_VERSION_FILE_MAX_SIZE] = "";
 
 void setup() {
   
@@ -130,12 +136,12 @@ bool mainBootSequence() {
   nvsSemaphore = xSemaphoreCreateMutex();
   
   Serial.println("\n> Reading config files");
-  if (!readBinaryData(&currConf, sizeof(GlobalConfig), NVS_KEY_CONFIG)) {
+  if (!readBinaryFromNVS(&currConf, sizeof(GlobalConfig), NVS_KEY_CONFIG)) {
     Serial.println("Using default config");
-    saveBinaryData(&currConf, sizeof(GlobalConfig), NVS_KEY_CONFIG);
+    saveBinaryToNVS(&currConf, sizeof(GlobalConfig), NVS_KEY_CONFIG);
   }
   
-  lastNTPSync = readIntData(NVS_KEY_LAST_NTP_SYNC);
+  lastNTPSync = readIntFromNVS(NVS_KEY_LAST_NTP_SYNC);
   
   
   /* ----------------------------------- */
@@ -150,7 +156,7 @@ bool mainBootSequence() {
       // TODO: Print error code on tubes
     }
   }
-  
+  readFatImageV();
   
   /* --------------------- */
   /* --- RGB LED setup --- */
@@ -256,9 +262,11 @@ bool mainBootSequence() {
   Serial.println("\n> Initializing web server");
   
   webServer.on("/json/version.json", HTTP_GET, [](AsyncWebServerRequest *request) {
-    String jsonStr = "{\"version\": \"";
-    jsonStr = jsonStr + FIRMWARE_V;
-    jsonStr = jsonStr + "\"}";
+    String jsonStr = "{\"firmwareV\": \"";
+    jsonStr += FIRMWARE_V;
+    jsonStr += "\", \"dataV\": \"";
+    jsonStr += dataPartitionVersion;
+    jsonStr += "\"}";
     
     sendJsonResponse(request, 200, jsonStr);
   });
@@ -375,22 +383,20 @@ bool mainBootSequence() {
   webServer.begin();
   
   
-  
-  
-  
-  
-  
-  
   /* ---------------------------------- */
   /* --- Jobs to do just after boot --- */
   /* ---------------------------------- */
   {
     MASTER_QUEUE_EVENT qItem;
     
-    if (currConf.ntpSync) {
-      qItem = MASTER_QUEUE_EVENT::NTP_SYNC;
-      xQueueSendToBack(masterQueue, &qItem, NULL);
-    }
+    qItem = MASTER_QUEUE_EVENT::NTP_SYNC;
+    xQueueSendToBack(masterQueue, &qItem, NULL);
+    
+    qItem = MASTER_QUEUE_EVENT::CHECK_FIRMWARE_UPD;
+    xQueueSendToBack(masterQueue, &qItem, NULL);
+    
+    qItem = MASTER_QUEUE_EVENT::CHECK_DATA_PART_UPD;
+    xQueueSendToBack(masterQueue, &qItem, NULL);
     
     qItem = MASTER_QUEUE_EVENT::CONNECT_WIFI;
     xQueueSendToFront(masterQueue, &qItem, NULL);
@@ -542,7 +548,7 @@ void execCmdHandler(AsyncWebServerRequest *request, uint8_t *data, size_t len, s
   
   if (cmdCode != COMMAND_CODE::NTP_SYNC &&
       cmdCode != COMMAND_CODE::TIME_SYNC &&
-      !saveBinaryData(&newConf, sizeof(GlobalConfig), NVS_KEY_CONFIG)) {
+      !saveBinaryToNVS(&newConf, sizeof(GlobalConfig), NVS_KEY_CONFIG)) {
     sendPlainTextResponse(request, 500, "Unable to save config file");
     return;
   }
@@ -663,25 +669,32 @@ void displayTimeOnTubes(uint32_t nowUtcUnixTime) {
 }
 
 void displayNumberOnTubes(uint16_t number) {
-  uint8_t h1, h2, m1, m2;
-  
+  // Semaphore not taken here because is always taken by calling function
+  int8_t h1, h2, m1, m2;
+
   h1 = (number/1000U) % 10;
   h2 = (number/100U) % 10;
   
   m1 = (number/10U) % 10;
   m2 = number % 10;
   
-  if (h1 == 0) setTubeDigit(0, -1);
-  else         setTubeDigit(0, h1);
+  if (number < 10) {
+    h1 = -1;
+    h2 = -1;
+    m1 = -1;
+  }
+  else if (number <100) {
+    h1 = -1;
+    h2 = -1;
+  }
+  else if (number < 1000) {
+    h1 = -1;
+  }
   
-  if (h2 == 0) setTubeDigit(1, -1);
-  else         setTubeDigit(1, h2);
-
-  if (m1 == 0) setTubeDigit(2, -1);
-  else         setTubeDigit(2, m1);
-
-  if (m2 == 0) setTubeDigit(3, -1);
-  else         setTubeDigit(3, m2);
+  setTubeDigit(0, h1);
+  setTubeDigit(1, h2);
+  setTubeDigit(2, m1);
+  setTubeDigit(3, m2);
   
   setDots(false);
 }
@@ -779,7 +792,7 @@ void wifiEventHandler(WiFiEvent_t event) {
 }
 
 bool wifiConnect() {
-  Serial.println("n\> Starting wifi");
+  Serial.println("\n> Starting wifi");
   
   if (currConf.netAPMode) {
     Serial.println("AP mode");
@@ -824,6 +837,141 @@ void wifiDisconnect() {
   }
 }
 
+bool checkOTAUpdate(OTA_UPDATE otaType) {
+  String vJsonKey, urlJsonKey;
+  
+  SemanticVersion currV;
+  SemanticVersion lastV;
+  
+  if (otaType == OTA_UPDATE::FIRMWARE) {
+    vJsonKey = "firmware_v";
+    urlJsonKey = "firmware_url";
+    currV.parseV(FIRMWARE_V);
+    Serial.println("\n> Checking firmware updates");
+  }
+  else {
+    vJsonKey = "fat_image_v";
+    urlJsonKey = "fat_image_url";
+    currV.parseV(dataPartitionVersion);
+    Serial.println("\n> Checking ffat image updates");
+  }
+  
+  Serial.printf("Current version %s\n", currV.getCString());
+  
+  WiFiClientSecure client;
+  
+  client.setInsecure();
+  
+  HTTPClient https;
+  https.setFollowRedirects(HTTPC_STRICT_FOLLOW_REDIRECTS);
+  
+  if (!https.begin(client, OTA_FIRMWARE_V_JSON_URL)) {
+    Serial.println("Unable to connect");
+    return false;
+  }
+  
+  int httpCode = https.GET();
+  if (httpCode < 0) {
+    Serial.printf("GET failed: %s\n", https.errorToString(httpCode).c_str());
+    return false;
+  }
+  
+  if (httpCode != HTTP_CODE_OK) {
+    Serial.printf("Failed: %u\n", httpCode);
+    return false;
+  }
+  
+  String responseString = https.getString();
+  https.end();
+  
+  DynamicJsonDocument jDoc(512);
+  DeserializationError desErr = deserializeJson(jDoc, responseString);
+  
+  if (desErr != DeserializationError::Ok) {
+    Serial.printf("JSON DeserializationError: %s\n", desErr.c_str());
+    return false;
+  }
+  
+  lastV.parseV(jDoc[vJsonKey].as<const char*>());
+  Serial.printf("Last available version %s\n", lastV.getCString());
+  
+  if (lastV > currV) {
+    // semaphore take
+    if (!xSemaphoreTake(rtcSemaphore, SEM_TAKE_DELAY_TICKS))
+      return false;
+    
+    if (!xSemaphoreTake(nvsSemaphore, SEM_TAKE_DELAY_TICKS)) {
+      xSemaphoreGive(rtcSemaphore);
+      return false;
+    }
+    
+    if (!xSemaphoreTake(tubesSemaphore, SEM_TAKE_DELAY_TICKS)) {
+      xSemaphoreGive(rtcSemaphore);
+      xSemaphoreGive(nvsSemaphore);
+      return false;
+    }
+    
+    httpUpdate.onStart(OTAStarted);
+    httpUpdate.onEnd(OTAFinished);
+    httpUpdate.onProgress(OTAOnProgress);
+    httpUpdate.onError(OTAError);
+    
+    httpUpdate.setFollowRedirects(HTTPC_FORCE_FOLLOW_REDIRECTS);
+    httpUpdate.rebootOnUpdate(false);
+    
+    t_httpUpdate_return ret;
+    
+    if (otaType == OTA_UPDATE::FIRMWARE)
+      ret = httpUpdate.update(client, jDoc[urlJsonKey]);
+    else
+      ret = httpUpdate.updateSpiffs(client, jDoc[urlJsonKey]);
+    
+    if (ret == HTTP_UPDATE_OK) {
+      Serial.println("OTA OK. Restarting...");
+      MASTER_QUEUE_EVENT qItemNew = MASTER_QUEUE_EVENT::REBOOT;
+      xQueueSendToBack(masterQueue, &qItemNew, NULL);
+      return true;
+    }
+    
+    xSemaphoreGive(rtcSemaphore);
+    xSemaphoreGive(nvsSemaphore);
+    xSemaphoreGive(tubesSemaphore);
+    
+    if (ret == HTTP_UPDATE_FAILED) {
+      Serial.printf("OTA Error (%d): %s\n", httpUpdate.getLastError(), httpUpdate.getLastErrorString().c_str());
+      return false;
+    }
+    
+    if (ret == HTTP_UPDATE_NO_UPDATES) {
+      Serial.println("OTA no updates");
+      return true;
+    }
+  }
+  
+  Serial.println("Nothing to update");
+  return true;
+}
+
+void OTAStarted() {
+  Serial.println("OTA started");
+}
+
+void OTAFinished() {
+  Serial.println("OTA finished");
+}
+
+void OTAOnProgress(int cur, int total) {
+  float percFloat = ((float)cur/(float)total)*100;
+  uint8_t percInt = (uint8_t) percFloat;
+  
+  displayNumberOnTubes(percInt);
+  Serial.printf("OTA update progress %d (%d of %d bytes)\n", percInt, cur, total);
+}
+
+void OTAError(int err) {
+  Serial.printf("OTA fatal error (code %d)\n", err);
+}
+
 bool syncNTP() {
   Serial.println("\n> NTP sync");
   
@@ -850,7 +998,7 @@ bool syncNTP() {
   
   currTime = utcTimeInt;
   lastNTPSync = utcTimeInt;
-  saveIntData(lastNTPSync, NVS_KEY_LAST_NTP_SYNC);
+  saveIntToNVS(lastNTPSync, NVS_KEY_LAST_NTP_SYNC);
   
   char dateTimeStringFormat[] = "DDD DD-MM-YYYY hh:mm:ss";
   char auxBuffer[25];
@@ -936,7 +1084,7 @@ void setRGBLEDColor(uint32_t hexColor, uint8_t brightness, bool ledOn) {
   ledcWrite(PWM_CH_LED_B, (uint8_t)(blue*brightness/100));
 }
 
-bool readBinaryData(void* destPnt, const size_t size, const char* key) {
+bool readBinaryFromNVS(void* destPnt, const size_t size, const char* key) {
   Serial.printf("Reading %s...", key);
   
   byte tmpBuffer[size];
@@ -963,7 +1111,7 @@ bool readBinaryData(void* destPnt, const size_t size, const char* key) {
   return true;
 }
 
-bool saveBinaryData(const void* sourcePnt, const size_t size, const char* key) {
+bool saveBinaryToNVS(const void* sourcePnt, const size_t size, const char* key) {
   Serial.printf("Saving %s...", key);
   
   size_t bytesWr = 0;
@@ -986,7 +1134,7 @@ bool saveBinaryData(const void* sourcePnt, const size_t size, const char* key) {
   return true;
 }
 
-uint32_t readIntData(const char* key) {
+uint32_t readIntFromNVS(const char* key) {
   Serial.printf("Reading %s...", key);
   
   uint32_t destInt = 0;
@@ -1004,7 +1152,7 @@ uint32_t readIntData(const char* key) {
   return destInt;
 }
 
-bool saveIntData(const uint32_t sourceInt, const char* key) {
+bool saveIntToNVS(const uint32_t sourceInt, const char* key) {
   Serial.printf("Saving %s...", key);
   
   size_t bytesWr = 0;
@@ -1027,39 +1175,162 @@ bool saveIntData(const uint32_t sourceInt, const char* key) {
   return true;
 }
 
+bool readFatImageV() {
+  Serial.printf("Reading FAT image version from %s ... ", FFAT_IMAGE_VERSION_FILE);
+  
+  if (!FFat.exists(FFAT_IMAGE_VERSION_FILE)) {
+    Serial.println("File not found");
+    return false;
+  }
+  
+  File vFile = FFat.open(FFAT_IMAGE_VERSION_FILE, FILE_READ);
+  
+  if (!vFile) {
+    Serial.println("Error opening file");
+    return false;
+  }
+  
+  uint8_t vFileSize = vFile.size();
+  if (vFileSize > FFAT_IMAGE_VERSION_FILE_MAX_SIZE) {
+    Serial.println("File too large");
+    return false;
+  }
+  
+  byte tmpBuffer[vFileSize];
+  size_t bytesRd = vFile.read((uint8_t*) &tmpBuffer, vFileSize);
+  vFile.close();
+  
+  if (bytesRd != vFileSize) {
+    Serial.println("Error reading file");
+    return false;
+  }
+  
+  memcpy(dataPartitionVersion, &tmpBuffer, vFileSize);
+  
+  Serial.println(dataPartitionVersion);
+  return true;
+}
+
 void loop() {
   MASTER_QUEUE_EVENT qItem;
   
   if( xQueueReceive( masterQueue, &qItem, ( TickType_t ) 0) == pdPASS ) {
+    
+    static uint8_t wifiTimeCounter = 0;
+    static bool    lastNTPSyncSuccess = true;
+    
+    static bool    lastFirmOTASuccess = true;
+    static bool    lastDataPartOTASuccess = true;
+    
+    static uint8_t firmOTARetry = 0;
+    static uint8_t dataPartOTARetry = 0;
     
     if (qItem == MASTER_QUEUE_EVENT::CONNECT_WIFI) {
       if (wifiConnect()) wifiTimeCounter = 0;
     }
     
     if (qItem == MASTER_QUEUE_EVENT::RTC_MINUTE_TOCK) {
+      DateTime nowTimeLocal(timeZoneObj.toLocal(currTime));
+      
+      static uint8_t cathodePoiMinCounter = 0;
+      
+      if (!cathodePoiOngoing) {
+        if (currConf.catPoiOn && nowTimeLocal.hour() == currConf.catPoiAtH && nowTimeLocal.minute() == currConf.catPoiAtMin) {
+          // Start cathode poisoning prevention cycle
+          cathodePoiOngoing = true;
+          cathodePoiMinCounter = 0;
+          
+          xTaskCreatePinnedToCore(
+          cathodePoisoningCycleTask, // Function to implement the task
+          "cathodePoiT", // Name of the task
+          1000,          // Stack size in words
+          NULL,          // Task input parameter
+          1,             // Priority of the task
+          &cathodePoiTaskHandler, // Task handle
+          slaveCore);    // Core
+          
+          Serial.println("\n> Strarting cathode poisoning routine");
+        }
+      }
+      else {
+        cathodePoiMinCounter++;
+        if ((cathodePoiMinCounter >= currConf.catPoiDurMin) || !currConf.catPoiOn) {
+          cathodePoiOngoing = false;
+          Serial.println("\n> Stopping cathode poisoning routine");
+        }
+      }
+      
       wifiTimeCounter++;
       if (wifiTimeCounter == WIFI_ON_TIME_MIN) wifiDisconnect();
       
+      // If last NTP sync failed, retry evey minute
       if (((currTime >= lastNTPSync + currConf.ntpSyncIntH*3600) || !lastNTPSyncSuccess) && !currConf.netAPMode) {
         MASTER_QUEUE_EVENT qItemNew = MASTER_QUEUE_EVENT::NTP_SYNC;
         xQueueSendToBack(masterQueue, &qItemNew, NULL);
       }
+      
+      if (nowTimeLocal.hour() == OTA_CHECK_TIME_H && nowTimeLocal.minute() == OTA_CHECK_TIME_MIN && !currConf.netAPMode) {
+        firmOTARetry = 0;
+        dataPartOTARetry = 0;
+        
+        MASTER_QUEUE_EVENT qItemNew;
+        
+        qItemNew = MASTER_QUEUE_EVENT::CHECK_FIRMWARE_UPD;
+        xQueueSendToBack(masterQueue, &qItemNew, NULL);
+        
+        qItemNew = MASTER_QUEUE_EVENT::CHECK_DATA_PART_UPD;
+        xQueueSendToBack(masterQueue, &qItemNew, NULL);
+      }
+      
+      // If last firmware update failed, retry every minute but max 5 times
+      if (!lastFirmOTASuccess && firmOTARetry < 5) {
+        MASTER_QUEUE_EVENT qItemNew = MASTER_QUEUE_EVENT::CHECK_FIRMWARE_UPD;
+        xQueueSendToBack(masterQueue, &qItemNew, NULL);
+        firmOTARetry++;
+      }
+      
+      // If last data partition update failed, retry every minute but max 5 times
+      if (!lastDataPartOTASuccess && dataPartOTARetry < 5) {
+        MASTER_QUEUE_EVENT qItemNew = MASTER_QUEUE_EVENT::CHECK_DATA_PART_UPD;
+        xQueueSendToBack(masterQueue, &qItemNew, NULL);
+      }
     }
     
-    if (qItem == MASTER_QUEUE_EVENT::NTP_SYNC) {
-      if (!currConf.netAPMode) {
-        lastNTPSyncSuccess = false;
-        if (WiFi.status() == WL_CONNECTED) {
-          lastNTPSyncSuccess = syncNTP();
-          if (lastNTPSyncSuccess) {
-            SLAVE_QUEUE_EVENT qItem = SLAVE_QUEUE_EVENT::UPDATE_TIME_ON_TUBES;
-            xQueueSendToFront(slaveQueue, &qItem, NULL);
-          }
+    if (qItem == MASTER_QUEUE_EVENT::CHECK_FIRMWARE_UPD && !currConf.netAPMode) {
+      lastFirmOTASuccess = false;
+      if (WiFi.status() == WL_CONNECTED) {
+        lastFirmOTASuccess = checkOTAUpdate(OTA_UPDATE::FIRMWARE);
+      }
+      else {
+        MASTER_QUEUE_EVENT qItemNew = MASTER_QUEUE_EVENT::CONNECT_WIFI;
+        xQueueSendToFront(masterQueue, &qItemNew, NULL);
+      }
+    }
+    
+    if (qItem == MASTER_QUEUE_EVENT::CHECK_DATA_PART_UPD && !currConf.netAPMode) {
+      lastDataPartOTASuccess = false;
+      if (WiFi.status() == WL_CONNECTED) {
+        lastDataPartOTASuccess = checkOTAUpdate(OTA_UPDATE::DATA_PARTITION);
+      }
+      else {
+        MASTER_QUEUE_EVENT qItemNew = MASTER_QUEUE_EVENT::CONNECT_WIFI;
+        xQueueSendToFront(masterQueue, &qItemNew, NULL);
+      }
+    }
+    
+    
+    if (qItem == MASTER_QUEUE_EVENT::NTP_SYNC && !currConf.netAPMode && currConf.ntpSync) {
+      lastNTPSyncSuccess = false;
+      if (WiFi.status() == WL_CONNECTED) {
+        lastNTPSyncSuccess = syncNTP();
+        if (lastNTPSyncSuccess) {
+          SLAVE_QUEUE_EVENT qItem = SLAVE_QUEUE_EVENT::UPDATE_TIME_ON_TUBES;
+          xQueueSendToFront(slaveQueue, &qItem, NULL);
         }
-        else {
-          MASTER_QUEUE_EVENT qItemNew = MASTER_QUEUE_EVENT::CONNECT_WIFI;
-          xQueueSendToFront(masterQueue, &qItemNew, NULL);
-        }
+      }
+      else {
+        MASTER_QUEUE_EVENT qItemNew = MASTER_QUEUE_EVENT::CONNECT_WIFI;
+        xQueueSendToFront(masterQueue, &qItemNew, NULL);
       }
     }
     
@@ -1093,7 +1364,6 @@ void coreSlaveTask(void* parameter) {
   
   currTime = rtc.now().unixtime();
   displayTimeOnTubes(currTime);
-  //displayNumberOnTubes(21);
   
   while (true) {
     SLAVE_QUEUE_EVENT qItem;
@@ -1101,38 +1371,24 @@ void coreSlaveTask(void* parameter) {
     if( xQueueReceive( slaveQueue, &qItem, ( TickType_t ) 0) == pdPASS ) {
       
       if (qItem == SLAVE_QUEUE_EVENT::UPDATE_TIME_ON_TUBES || qItem == SLAVE_QUEUE_EVENT::RTC_ALARM_FIRED) {
-        //Serial.println("Update time on tubes");
+        Serial.println("\n> Updating time on tubes");
         
         if (xSemaphoreTake(rtcSemaphore, SEM_TAKE_DELAY_TICKS)) {
           if (rtc.alarmFired(1)) rtc.clearAlarm(1);
           currTime = rtc.now().unixtime();
           xSemaphoreGive(rtcSemaphore);
           
-          DateTime nowTimeLocal(timeZoneObj.toLocal(currTime));
-          
-          if (cathodePoiOngoing) {
-            cathodePoiMinCounter++;
-            if ((cathodePoiMinCounter >= currConf.catPoiDurMin) || !currConf.catPoiOn) cathodePoiOngoing = false;
-          }
-          else if (currConf.catPoiOn && nowTimeLocal.hour() == currConf.catPoiAtH && nowTimeLocal.minute() == currConf.catPoiAtMin) {
-            // Start cathode poisoning prevention cycle
-            cathodePoiOngoing = true;
-            cathodePoiMinCounter = 0;
-            
-            xTaskCreatePinnedToCore(
-            cathodePoisoningCycleTask, // Function to implement the task
-            "cathodePoiT", // Name of the task
-            1000,          // Stack size in words
-            NULL,          // Task input parameter
-            1,             // Priority of the task
-            &cathodePoiTaskHandler, // Task handle
-            slaveCore);    // Core
-          }
-          
+          // tubes semaphore taken inside the function
           displayTimeOnTubes(currTime);
         }
         else {
-          xQueueSendToFront(slaveQueue, &qItem, NULL);
+          static uint8_t tubeUpdateRetry = 0;
+          
+          if (tubeUpdateRetry < 5) {
+            xQueueSendToFront(slaveQueue, &qItem, NULL);
+            tubeUpdateRetry++;
+          }
+          else tubeUpdateRetry = 0;
         }
       }
       
