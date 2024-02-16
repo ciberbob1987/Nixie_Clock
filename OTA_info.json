@@ -1,6 +1,6 @@
 {
-  "firmware_v": "1.2.0",
-  "firmware_url": "https://github.com/ciberbob1987/test_esp32_ota/releases/latest/download/Nixie_Clock_firmware.bin",
-  "fat_image_v": "1.3.0",
-  "fat_image_url": "https://github.com/ciberbob1987/test_esp32_ota/releases/latest/download/ffat_image_for_OTA.bin"
+  "firmware_v": "1.3.0",
+  "firmware_url": "https://github.com/ciberbob1987/Nixie_Clock/releases/latest/download/Nixie_Clock_firmware.bin",
+  "fat_image_v": "1.2.0",
+  "fat_image_url": "https://github.com/ciberbob1987/Nixie_Clock/releases/latest/download/ffat_image_for_OTA_v1.2.0.bin"
 }

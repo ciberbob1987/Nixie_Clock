@@ -1,7 +1,7 @@
 #ifndef _StaticConfig_h
 #define _StaticConfig_h
 
-const char     FIRMWARE_V[] = "1.2.0";
+const char     FIRMWARE_V[] = "1.3.0";
 
 const char     FFAT_IMAGE_VERSION_FILE[]        = "/version.txt";
 const uint8_t  FFAT_IMAGE_VERSION_FILE_MAX_SIZE = 15;
@@ -48,6 +48,28 @@ const uint8_t  PIN_TOUCH_3  = 13;
 const uint8_t  PIN_DAC_CS[] = {26, 2, 4, 15};
 const uint8_t  DAC_NUM      = 4;
 const uint8_t  DAC_CHANNELS = 12;
+
+enum DAC_IDX : uint8_t {
+  DAC_U1 = 0,
+  DAC_U2,
+  DAC_U3,
+  DAC_U4
+};
+
+enum DAC_CHANNEL_IDX : uint8_t {
+  CH_AO1 = 0,
+  CH_AO2,
+  CH_AO3,
+  CH_AO4,
+  CH_AO5,
+  CH_AO6,
+  CH_AO7,
+  CH_AO8,
+  CH_AO9,
+  CH_AO10,
+  CH_AO11,
+  CH_AO12
+};
 
 const uint8_t  PIN_SPI_SCK  = 18;
 const uint8_t  PIN_SPI_MISO = 34;
